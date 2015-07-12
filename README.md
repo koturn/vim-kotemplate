@@ -16,17 +16,17 @@ function s:get_filename_camel2capital(tag)
   let l:basefilename = fnamemodify(expand('%'), ':t:r')
   return l:basefilename == '' ? a:tag : toupper(substitute(l:basefilename, '.\@<=\(\u\)', '_\l\1', 'g'))
 endfunction
-  function s:move_cursor(tag)
-    if getline(line('$')) == ''
-      let l:pos = getpos('.')
-      normal! G"_ddgg
-      call setpos('.', l:pos)
-    endif
-    if search(a:tag)
-      normal! "_da>
-    endif
-    return ''
-  endfunction
+function s:move_cursor(tag)
+  if getline(line('$')) == ''
+    let l:pos = getpos('.')
+    normal! G"_ddgg
+    call setpos('.', l:pos)
+  endif
+  if search(a:tag)
+    normal! "_da>
+  endif
+  return ''
+endfunction
 
 let g:kotemplate#filter = {
       \ 'pattern': {
@@ -44,7 +44,6 @@ let g:kotemplate#filter = {
       \ },
       \ 'function': function('s:filter_function')
       \}
-endfunction
 let g:kotemplate#enable_autocmd = 1
 let g:kotemplate#auto_filetypes = keys(g:kotemplate#filter.pattern)
 let g:kotemplate#dir = '~/github/kotemplate/'
