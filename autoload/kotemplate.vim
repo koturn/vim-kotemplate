@@ -18,8 +18,6 @@ let g:kotemplate#projects = get(g:, 'kotemplate#projects', {})
 let g:kotemplate#fileencoding = get(g:, 'kotemplate#fileencoding', 'utf-8')
 let g:kotemplate#fileformat = get(g:, 'kotemplate#fileformat', 'unix')
 
-echomsg 'Loaded autoload'
-
 
 function! kotemplate#load(template_path, ...) abort
   let template_file = expand(s:add_path_separator(g:kotemplate#dir) . a:template_path)
