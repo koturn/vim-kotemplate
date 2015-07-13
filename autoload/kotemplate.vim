@@ -1,9 +1,8 @@
 " ============================================================================
 " FILE: kotemplate.vim
 " AUTHOR: koturn <jeak.koutan.apple@gmail.com>
-" Last Modified: 2015 07/07
 " DESCRIPTION: {{{
-" descriptions.
+" koturn's template loader.
 " }}}
 " ============================================================================
 let s:save_cpo = &cpo
@@ -97,14 +96,14 @@ function! s:auto_action() abort
   autocmd! KoTemplate FileType *
   if count(g:kotemplate#auto_filetypes, &filetype) && !filereadable(expand('%:p'))
     let template_files = kotemplate#complete_load('', 'KoTemplate', 0)
-    let _template_files = copy(template_files)
-    let i = 0
-    for file in _template_files
-      let _template_files[i] = printf('%2d. %s', i, file)
-      let i += 1
-    endfor
-    echo "Select template file to load. (Input nothing if you don't want to load template file)"
-    let nr = inputlist(_template_files)
+    let msg = "Select template file to load. (Input nothing if you don't want to load template file)"
+    let choises = insert(copy(template_files), msg)
+    let i = 1
+    while i < len(choises)
+      let choises[i] = printf('%2d. %s', i, choises[i])
+      let i+= 1
+    endwhile
+    let nr = inputlist(choises) - 1
     if 0 <= nr && nr < len(template_files)
       call kotemplate#load(template_files[nr])
     endif

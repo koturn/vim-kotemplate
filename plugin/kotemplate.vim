@@ -1,9 +1,8 @@
 " ============================================================================
 " FILE: kotemplate.vim
 " AUTHOR: koturn <jeak.koutan.apple@gmail.com>
-" Last Modified: 2015 07/07
 " DESCRIPTION: {{{
-" descriptions.
+" koturn's template loader.
 " }}}
 " ============================================================================
 if exists('g:loaded_kotemplate')

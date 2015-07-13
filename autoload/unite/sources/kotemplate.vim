@@ -2,7 +2,7 @@
 " FILE: kotemplate.vim
 " AUTHOR: koturn <jeak.koutan.apple@gmail.com>
 " DESCRIPTION: {{{
-" descriptions.
+" koturn's template loader.
 " unite.vim: https://github.com/Shougo/unite.vim
 " }}}
 " ============================================================================

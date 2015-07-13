@@ -2,7 +2,8 @@
 " FILE: kotemplate.vim
 " AUTHOR: koturn <jeak.koutan.apple@gmail.com>
 " DESCRIPTION: {{{
-" descriptions.
+" koturn's template loader.
+" ctrlp.vim: https://github.com/ctrlpvim/ctrlp.vim
 " }}}
 " ============================================================================
 let s:save_cpo = &cpo
