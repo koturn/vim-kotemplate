@@ -17,6 +17,10 @@ set cpo&vim
 command! -bar -nargs=+ -complete=customlist,kotemplate#complete_load KoTemplateLoad  call kotemplate#load(<f-args>)
 command! -bar -nargs=+ -complete=customlist,kotemplate#complete_project KoTemplateMakeProject  call kotemplate#make_project(<f-args>)
 
+if match(split(&runtimepath, ','), 'ctrlp\.vim') != -1
+  command! CtrlPKoTemplate call ctrlp#init(ctrlp#kotemplate#id())
+endif
+
 augroup KoTemplate
   autocmd!
   autocmd BufNewFile * call kotemplate#auto_action()
