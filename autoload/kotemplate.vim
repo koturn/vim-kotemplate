@@ -10,6 +10,9 @@ set cpo&vim
 
 let g:kotemplate#dir = get(g:, 'kotemplate#dir', '~/.vim/template/')
 let g:kotemplate#tag_actions = get(g:, 'kotemplate#tag_actions', [])
+let g:kotemplate#filter = get(g:, 'kotemplate#filter', {})
+let g:kotemplate#n_choises = get(g:, 'kotemplate#n_choises', 5)
+let g:kotemplate#autocmd_function = get(g:, 'kotemplate#autocmd_function', 'inputlist')
 let g:kotemplate#enable_template_cache = get(g:, 'kotemplate#enable_template_cache', 1)
 let g:kotemplate#enable_autocmd = get(g:, 'kotemplate#enable_autocmd', 0)
 let g:kotemplate#auto_filetypes = get(g:, 'kotemplate#auto_filetypes', [])
@@ -24,8 +27,7 @@ function! kotemplate#load(template_path, ...) abort
     echoerr 'File not found:' template_file
     return
   endif
-  execute (line('.') - 1) . 'r ' . template_file
-
+  execute 'silent ' . (line('.') - 1) . 'read ' . template_file
   let tag_actions = type(g:kotemplate#tag_actions) == type({}) ?
         \ [g:kotemplate#tag_actions] : g:kotemplate#tag_actions
   for tag_action in tag_actions
@@ -47,14 +49,12 @@ function! kotemplate#load(template_path, ...) abort
   endfor
 endfunction
 
-
 function! kotemplate#auto_action() abort
   if g:kotemplate#enable_autocmd
     autocmd! KoTemplate FileType *
     autocmd KoTemplate FileType * call s:auto_action()
   endif
 endfunction
-
 
 function! kotemplate#make_project(project_name, template_project_name) abort
   let project = has_key(g:kotemplate#projects, a:template_project_name) ?
@@ -66,13 +66,12 @@ function! kotemplate#make_project(project_name, template_project_name) abort
   call s:make_project(project, s:add_path_separator(a:project_name))
 endfunction
 
-
 function! kotemplate#complete_load(arglead, cmdline, cursorpos) abort
   let shellslash = &shellslash
   set shellslash
-  let nargs = len(split(split(a:cmdline, '\s*\\\@<!|\s*')[-1], '\s\+'))
+  let nargs = a:cmdline ==# '' ? 1 : len(split(split(a:cmdline, '\s*\\\@<!|\s*')[-1], '\s\+'))
   if nargs == 1 || (nargs == 2 && a:arglead !=# '')
-    let candidates = g:kotemplate#filter.function(map(s:gather_template_files(),
+    let candidates = s:get_filter_function()(map(s:gather_template_files(),
           \ printf('substitute(v:val, "^%s", "", "g")',
           \ expand(s:add_path_separator(g:kotemplate#dir)))))
     let &shellslash = shellslash
@@ -80,7 +79,6 @@ function! kotemplate#complete_load(arglead, cmdline, cursorpos) abort
   endif
   let &shellslash = shellslash
 endfunction
-
 
 function! kotemplate#complete_project(arglead, cmdline, cursorpos) abort
   let nargs = len(split(split(a:cmdline, '\s*\\\@<!|\s*')[-1], '\s\+'))
@@ -90,26 +88,135 @@ function! kotemplate#complete_project(arglead, cmdline, cursorpos) abort
 endfunction
 
 
-
-
 function! s:auto_action() abort
   autocmd! KoTemplate FileType *
-  if count(g:kotemplate#auto_filetypes, &filetype) && !filereadable(expand('%:p'))
-    let template_files = kotemplate#complete_load('', 'KoTemplate', 0)
-    let msg = "Select template file to load. (Input nothing if you don't want to load template file)"
-    let choises = insert(copy(template_files), msg)
-    let i = 1
-    while i < len(choises)
-      let choises[i] = printf('%2d. %s', i, choises[i])
-      let i+= 1
-    endwhile
-    let nr = inputlist(choises) - 1
-    if 0 <= nr && nr < len(template_files)
-      call kotemplate#load(template_files[nr])
-    endif
+  if !count(g:kotemplate#auto_filetypes, &filetype) || filereadable(expand('%:p'))
+    return
   endif
+  call s:get_autocmd_function()()
 endfunction
 
+function! s:auto_action_excommand() abort
+  call feedkeys(":\<C-u>KoTemplateLoad ")
+endfunction
+
+function! s:auto_action_rawinput() abort
+  let file = input('Input template file name> ', '', 'customlist,kotemplate#complete_load')
+  redraw!
+  call kotemplate#load(file)
+endfunction
+
+function! s:auto_action_getchar() abort
+  let template_files = kotemplate#complete_load('', '', 0)
+  let from = 0
+  let to = g:kotemplate#n_choises - 1
+  let fileidx = 1
+  let n_choises = g:kotemplate#n_choises > 9 ? 9 : g:kotemplate#n_choises
+  echo "Select template file to load. (Input nothing if you don't want to load template file)"
+  while from < len(template_files)
+    let i = 1
+    let msg = ''
+    while i <= n_choises && fileidx - 1 < len(template_files)
+      let msg .= printf("  %d. %s\n", i, template_files[from + i - 1])
+      let fileidx += 1
+      let i += 1
+    endwhile
+    echo msg . '> '
+    let ch = getchar()
+    if ch ==# char2nr("\<Esc>")
+      return
+    endif
+    let nr = ch + from - char2nr('0') - 1
+    if from <= nr && nr <= to && nr < len(template_files)
+      call kotemplate#load(template_files[nr])
+      return
+    endif
+    let from += n_choises
+    let to += n_choises
+  endwhile
+endfunction
+
+function! s:auto_action_input() abort
+  let template_files = kotemplate#complete_load('', '', 0)
+  let from = 0
+  let to = g:kotemplate#n_choises - 1
+  let fileidx = 1
+  echo "Select template file to load. (Input nothing if you don't want to load template file)"
+  while from < len(template_files)
+    let i = 1
+    let msg = ''
+    while i <= g:kotemplate#n_choises && fileidx - 1 < len(template_files)
+      let msg .= printf("  %d. %s\n", fileidx, template_files[from + i - 1])
+      let fileidx += 1
+      let i += 1
+    endwhile
+    let input = input(msg . '> ')
+    if input !=# ''
+      let nr = str2nr(input) - 1
+      if 0 <= nr && nr <= to && nr < len(template_files)
+        call kotemplate#load(template_files[nr])
+        return
+      endif
+    else
+      echo "\n"
+    endif
+    let from += g:kotemplate#n_choises
+    let to += g:kotemplate#n_choises
+  endwhile
+endfunction
+
+function! s:auto_action_inputlist() abort
+  let template_files = kotemplate#complete_load('', '', 0)
+  let msg = "Select template file to load. (Input nothing if you don't want to load template file)"
+  let from = 0
+  let to = g:kotemplate#n_choises - 1
+  let choises = insert(template_files[from : to], msg)
+  let fileidx = 1
+  while from < len(template_files)
+    let i = 1
+    while i < len(choises) && fileidx - 1 < len(template_files)
+      let choises[i] = printf('  %d. %s', fileidx, template_files[from + i - 1])
+      let fileidx += 1
+      let i += 1
+    endwhile
+    if i - 1 < g:kotemplate#n_choises
+      let choises = choises[0 : i - 1]
+    endif
+    let nr = inputlist(choises) - 1
+    if 0 <= nr && nr <= to && nr < len(template_files)
+      call kotemplate#load(template_files[nr])
+      return
+    endif
+    let from += g:kotemplate#n_choises
+    let to += g:kotemplate#n_choises
+    let choises[0] = ''
+  endwhile
+endfunction
+
+function! s:auto_action_unite() abort
+  Unite kotemplate
+endfunction
+
+function! s:auto_action_ctrlp() abort
+  call ctrlp#init(ctrlp#kotemplate#id())
+endfunction
+
+let s:autocmd_functions = {
+      \ 'excommand': function('s:auto_action_excommand'),
+      \ 'getchar': function('s:auto_action_getchar'),
+      \ 'rawinput': function('s:auto_action_rawinput'),
+      \ 'input': function('s:auto_action_input'),
+      \ 'inputlist': function('s:auto_action_inputlist'),
+      \ 'unite': function('s:auto_action_unite'),
+      \ 'ctrlp': function('s:auto_action_ctrlp')
+      \}
+
+function! s:get_autocmd_function() abort
+  if has_key(s:autocmd_functions, g:kotemplate#autocmd_function)
+    return s:autocmd_functions[g:kotemplate#autocmd_function]
+  endif
+  return s:autocmd_functions.inputlist
+endfunction
 
 function! s:make_project(project_dict, path) abort
   for [key, val] in items(a:project_dict)
@@ -122,11 +229,11 @@ function! s:make_project(project_dict, path) abort
       noautocmd write
       bwipeout
     elseif type(val) == type({})
-      let newpath = s:add_path_separator(a:path . s:eval(substitute(key, '%%PROJECT%%', s:project_name, 'g')))
-      if !isdirectory(newpath)
-        call mkdir(newpath)
+      let dirpath = s:add_path_separator(a:path . s:eval(substitute(key, '%%PROJECT%%', s:project_name, 'g')))
+      if !isdirectory(dirpath)
+        call mkdir(dirpath)
       endif
-      call s:make_project(val, newpath)
+      call s:make_project(val, dirpath)
     endif
     unlet key val
   endfor
@@ -175,13 +282,22 @@ function! s:regex_filter(candidates) abort
   endif
 endfunction
 
-let g:kotemplate#filter = get(g:, 'kotemplate#filter', {})
+function! s:get_filter_function() abort
+  if type(g:kotemplate#filter.function) == type(function('function'))
+    return g:kotemplate#filter.function
+  elseif type(g:kotemplate#filter.function) == type('')
+        \ && has_key(g:kotemplate#filter_functions, g:kotemplate#filter.function)
+    return g:kotemplate#filter_functions[g:kotemplate#filter.function]
+  endif
+  return g:kotemplate#filter_functions.glob
+endfunction
+
 let g:kotemplate#filter.pattern = get(g:kotemplate#filter, 'pattern', {})
 let g:kotemplate#filter.function = get(g:kotemplate#filter, 'function', {})
-let g:kotemplate#filter_function = {
+let g:kotemplate#filter_functions = {
       \ 'suffix': function('s:suffix_filter'),
       \ 'glob': function('s:glob_filter'),
-      \ 'regex': function('s:regex_filter'),
+      \ 'regex': function('s:regex_filter')
       \}
 
 function! s:flatten(list, ...) abort

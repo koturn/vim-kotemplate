@@ -36,7 +36,7 @@ function! ctrlp#kotemplate#id() abort
 endfunction
 
 function! ctrlp#kotemplate#init() abort
-  return kotemplate#complete_load('', 'KoTemplate', 0)
+  return kotemplate#complete_load('', '', 0)
 endfunction
 
 function! ctrlp#kotemplate#accept(mode, str) abort

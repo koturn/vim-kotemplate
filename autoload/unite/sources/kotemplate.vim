@@ -26,7 +26,7 @@ function! s:source.action_table.action.func(candidate) abort
 endfunction
 
 function! s:source.gather_candidates(args, context) abort
-  return map(kotemplate#complete_load('', 'KoTemplate', 0), '{"word": v:val}')
+  return map(kotemplate#complete_load('', '', 0), '{"word": v:val}')
 endfunction
 
 function! unite#sources#kotemplate#define() abort
