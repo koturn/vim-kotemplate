@@ -43,11 +43,10 @@ endfunction
 function! s:milqi_hook()
   try
     call milqi#candidate_first(milqi#kotemplate#define())
-    delfunction s:milqi_hook
     command! -bar MilqiKoTemplate  call milqi#candidate_first(milqi#kotemplate#define())
   catch /^Vim\%((\a\+)\)\=:E\%(117\): .\+: milqi#candidate_first$/
-    echomsg 'kamichidu/vim-milqi is not installed'
     delcommand MilqiKoTemplate
+    echomsg 'kamichidu/vim-milqi is not installed'
   endtry
 endfunction
 
