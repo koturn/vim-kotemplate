@@ -40,7 +40,6 @@ function! kotemplate#load(template_path, ...) abort
       unlet Action
     endfor
   endfor
-  silent %s/<%=\(.\{-}\)%>/\=s:eval(submatch(1))/ge
   let i = 1
   for va_arg_action in a:000
     let tag = printf('<-ARG%d->', i)
@@ -101,9 +100,11 @@ function! s:auto_action_excommand() abort
 endfunction
 
 function! s:auto_action_rawinput() abort
-  let file = input('Input template file name> ', '', 'customlist,kotemplate#complete_load')
+  let input = s:input('Input template file name> ', '', 'customlist,kotemplate#complete_load')
   redraw!
-  call kotemplate#load(file)
+  if type(input) != type(0)
+    call kotemplate#load(file)
+  endif
 endfunction
 
 function! s:auto_action_getchar() abort
@@ -150,13 +151,15 @@ function! s:auto_action_input() abort
       let fileidx += 1
       let i += 1
     endwhile
-    let input = input(msg . '> ')
+    let input = s:input(msg . '> ')
     if input !=# ''
       let nr = str2nr(input) - 1
       if 0 <= nr && nr <= to && nr < len(template_files)
         call kotemplate#load(template_files[nr])
         return
       endif
+    elseif type(input) == type(0)
+      return
     else
       echo "\n"
     endif
@@ -201,6 +204,10 @@ function! s:auto_action_ctrlp() abort
   call ctrlp#init(ctrlp#kotemplate#id())
 endfunction
 
+function! s:auto_action_alti() abort
+  call alti#init(alti#kotemplate#define())
+endfunction
+
 let s:autocmd_functions = {
       \ 'excommand': function('s:auto_action_excommand'),
       \ 'getchar': function('s:auto_action_getchar'),
@@ -208,7 +215,8 @@ let s:autocmd_functions = {
       \ 'input': function('s:auto_action_input'),
       \ 'inputlist': function('s:auto_action_inputlist'),
       \ 'unite': function('s:auto_action_unite'),
-      \ 'ctrlp': function('s:auto_action_ctrlp')
+      \ 'ctrlp': function('s:auto_action_ctrlp'),
+      \ 'alti': function('s:auto_action_alti')
       \}
 
 function! s:get_autocmd_function() abort
@@ -340,6 +348,14 @@ function! s:eval(str) abort
   catch /^Vim\%((\a\+)\)\=:E\%(15\|121\|492\): /
     return a:str
   endtry
+endfunction
+
+function! s:input(...) abort
+  new
+  cnoremap <buffer> <Esc> __KOTEMPLATE_CANCELED__<CR>
+  let str = call('input', a:000)
+  bwipeout!
+  return str =~# '__KOTEMPLATE_CANCELED__$' ? 0 : str
 endfunction
 
 

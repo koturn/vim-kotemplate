@@ -30,7 +30,7 @@ else
   let g:ctrlp_ext_vars = [s:kotemplate_var]
 endif
 
-let s:id = g:ctrlp_builtins + len(g:ctrlp_ext_vars)
+let s:id = (exists('g:ctrlp_builtins') ? g:ctrlp_builtins : 0) + len(g:ctrlp_ext_vars)
 function! ctrlp#kotemplate#id() abort
   return s:id
 endfunction
