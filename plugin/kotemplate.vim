@@ -20,7 +20,7 @@ command! -bar CtrlPKoTemplate  call s:ctrlp_hook() | delfunction s:crtlp_hook
 command! -bar AltiKoTemplate  call s:alti_hook() | delfunction s:alti_hook
 command! -bar MilqiKoTemplate  call s:milqi_hook() | delfunction s:milqi_hook
 
-function! s:ctrlp_hook()
+function! s:ctrlp_hook() abort
   try
     call ctrlp#init(ctrlp#kotemplate#id())
     command! -bar AltiKoTemplate  call ctrlp#init(ctrlp#kotemplate#id())
@@ -30,7 +30,7 @@ function! s:ctrlp_hook()
   endtry
 endfunction
 
-function! s:alti_hook()
+function! s:alti_hook() abort
   try
     call alti#init(alti#kotemplate#define())
     command! -bar AltiKoTemplate  call alti#init(alti#kotemplate#define())
@@ -40,7 +40,7 @@ function! s:alti_hook()
   endtry
 endfunction
 
-function! s:milqi_hook()
+function! s:milqi_hook() abort
   try
     call milqi#candidate_first(milqi#kotemplate#define())
     command! -bar MilqiKoTemplate  call milqi#candidate_first(milqi#kotemplate#define())
