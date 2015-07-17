@@ -27,7 +27,7 @@ function! kotemplate#load(template_path, ...) abort
     echoerr 'File not found:' template_file
     return
   endif
-  execute 'silent ' . (line('.') - 1) . 'read ' . template_file
+  execute 'silent' (line('.') - 1) 'read' template_file
   let tag_actions = type(g:kotemplate#tag_actions) == type({}) ?
         \ [g:kotemplate#tag_actions] : g:kotemplate#tag_actions
   for tag_action in tag_actions
@@ -50,8 +50,8 @@ endfunction
 
 function! kotemplate#auto_action() abort
   if g:kotemplate#enable_autocmd
-    autocmd! KoTemplate FileType *
-    autocmd KoTemplate FileType * call s:auto_action()
+    autocmd! KoTemplate FileType
+    autocmd KoTemplate FileType <buffer>  call s:auto_action()
   endif
 endfunction
 
@@ -88,7 +88,7 @@ endfunction
 
 
 function! s:auto_action() abort
-  autocmd! KoTemplate FileType *
+  autocmd! KoTemplate FileType <buffer>
   if !count(g:kotemplate#auto_filetypes, &filetype) || filereadable(expand('%:p'))
     return
   endif
@@ -208,6 +208,10 @@ function! s:auto_action_alti() abort
   call alti#init(alti#kotemplate#define())
 endfunction
 
+function! s:auto_action_milqi() abort
+  call milqi#candidate_first(milqi#kotemplate#define())
+endfunction
+
 let s:autocmd_functions = {
       \ 'excommand': function('s:auto_action_excommand'),
       \ 'getchar': function('s:auto_action_getchar'),
@@ -216,7 +220,8 @@ let s:autocmd_functions = {
       \ 'inputlist': function('s:auto_action_inputlist'),
       \ 'unite': function('s:auto_action_unite'),
       \ 'ctrlp': function('s:auto_action_ctrlp'),
-      \ 'alti': function('s:auto_action_alti')
+      \ 'alti': function('s:auto_action_alti'),
+      \ 'milqi': function('s:auto_action_milqi')
       \}
 
 function! s:get_autocmd_function() abort
@@ -353,9 +358,15 @@ endfunction
 function! s:input(...) abort
   new
   cnoremap <buffer> <Esc> __KOTEMPLATE_CANCELED__<CR>
-  let str = call('input', a:000)
-  bwipeout!
-  return str =~# '__KOTEMPLATE_CANCELED__$' ? 0 : str
+  try
+    let input = call('input', a:000)
+    let input = input =~# '__KOTEMPLATE_CANCELED__$' ? 0 : input
+  catch /^Vim:Interrupt$/
+    let input = -1
+  finally
+    bwipeout!
+    return input
+  endtry
 endfunction
 
 
