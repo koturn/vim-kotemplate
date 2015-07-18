@@ -52,6 +52,9 @@ function! kotemplate#auto_action() abort
   if g:kotemplate#enable_autocmd
     autocmd! KoTemplate FileType <buffer>
     autocmd KoTemplate FileType <buffer>  call s:auto_action()
+    if !empty(&l:filetype)
+      doautocmd KoTemplate FileType <buffer>
+    endif
   endif
 endfunction
 
