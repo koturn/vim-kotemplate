@@ -23,7 +23,7 @@ command! -bar MilqiKoTemplate  call s:milqi_hook() | delfunction s:milqi_hook
 function! s:ctrlp_hook() abort
   try
     call ctrlp#init(ctrlp#kotemplate#id())
-    command! -bar AltiKoTemplate  call ctrlp#init(ctrlp#kotemplate#id())
+    command! -bar CtrlPKoTemplate  call ctrlp#init(ctrlp#kotemplate#id())
   catch /^Vim\%((\a\+)\)\=:E\%(117\): .\+: ctrlp#init$/
     delcommand CtrlPKoTemplate
     echoerr 'ctrlpvim/ctrlp.vim is not installed.'

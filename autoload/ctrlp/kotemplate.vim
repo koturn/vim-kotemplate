@@ -19,6 +19,7 @@ let g:loaded_ctrlp_kotemplate = 1
 let s:kotemplate_var = {
       \ 'init': 'ctrlp#kotemplate#init()',
       \ 'accept': 'ctrlp#kotemplate#accept',
+      \ 'enter': 'ctrlp#kotemplate#enter()',
       \ 'lname': 'kotemplate',
       \ 'sname': 'kotemplate',
       \ 'type': 'line',
@@ -36,12 +37,16 @@ function! ctrlp#kotemplate#id() abort
 endfunction
 
 function! ctrlp#kotemplate#init() abort
-  return kotemplate#complete_load('', '', 0)
+  return s:candidates
 endfunction
 
 function! ctrlp#kotemplate#accept(mode, str) abort
   call ctrlp#exit()
   call kotemplate#load(a:str)
+endfunction
+
+function! ctrlp#kotemplate#enter() abort
+  let s:candidates = kotemplate#complete_load('', '', 0)
 endfunction
 
 
