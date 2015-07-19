@@ -263,7 +263,7 @@ let s:template_cache = []
 function! s:gather_template_files() abort
   if !g:kotemplate#enable_template_cache || empty(s:template_cache)
     let s:template_cache = filter(split(globpath(
-          \ g:kotemplate#dir . '**', '*'), "\n"), 'filereadable(v:val)')
+          \ g:kotemplate#dir . '**', '*', 1), "\n"), 'filereadable(v:val)')
   endif
   return copy(s:template_cache)
 endfunction
@@ -281,7 +281,7 @@ function! s:glob_filter(candidates) abort
   if has_key(g:kotemplate#filter.pattern, &filetype)
     let dir = s:add_path_separator(g:kotemplate#dir)
     let files = map(s:flatten(map(copy(g:kotemplate#filter.pattern[&filetype]),
-          \ 'split(globpath(dir . "**", v:val), "\n")'), 1),
+          \ 'split(globpath(dir . "**", v:val, 1), "\n")'), 1),
           \ printf('substitute(v:val, "^%s", "", "g")', expand(dir)))
     return filter(a:candidates, 'match(files, v:val) != -1')
   else
