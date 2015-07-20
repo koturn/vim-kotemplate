@@ -71,21 +71,23 @@ endfunction
 function! kotemplate#complete_load(arglead, cmdline, cursorpos) abort
   let shellslash = &shellslash
   set shellslash
-  let nargs = a:cmdline ==# '' ? 1 : len(split(split(a:cmdline, '\s*\\\@<!|\s*')[-1], '\s\+'))
+  let nargs = a:cmdline ==# '' ? 1 : len(split(split(a:cmdline, '[^\\]\zs|')[-1], '\s\+'))
   if nargs == 1 || (nargs == 2 && a:arglead !=# '')
     let candidates = s:get_filter_function()(map(s:gather_template_files(),
           \ printf('substitute(v:val, "^%s", "", "g")',
           \ expand(s:add_path_separator(g:kotemplate#dir)))))
     let &shellslash = shellslash
-    return filter(candidates, 'stridx(tolower(v:val), tolower(a:arglead)) == 0')
+    let _arglead = tolower(a:arglead)
+    return filter(candidates, '!stridx(tolower(v:val), _arglead)')
   endif
   let &shellslash = shellslash
 endfunction
 
 function! kotemplate#complete_project(arglead, cmdline, cursorpos) abort
-  let nargs = len(split(split(a:cmdline, '\s*\\\@<!|\s*')[-1], '\s\+'))
+  let nargs = len(split(split(a:cmdline, '[^\\]\zs|')[-1], '\s\+'))
   if nargs == 2 || (nargs == 3 && a:arglead !=# '')
-    return filter(keys(g:kotemplate#projects), 'stridx(tolower(v:val), tolower(a:arglead)) == 0')
+    let _arglead = tolower(a:arglead)
+    return filter(keys(g:kotemplate#projects), '!stridx(tolower(v:val), _arglead)')
   endif
 endfunction
 
