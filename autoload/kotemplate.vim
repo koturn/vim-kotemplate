@@ -355,7 +355,7 @@ endfunction
 function! s:eval(str) abort
   try
     return eval(a:str)
-  catch /^Vim\%((\a\+)\)\=:E\%(15\|121\|492\): /
+  catch /^Vim(return)\=:E\%(\d\+\): /
     return a:str
   endtry
 endfunction

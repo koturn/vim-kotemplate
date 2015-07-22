@@ -24,7 +24,7 @@ function! s:ctrlp_hook() abort
   try
     call ctrlp#init(ctrlp#kotemplate#id())
     command! -bar CtrlPKoTemplate  call ctrlp#init(ctrlp#kotemplate#id())
-  catch /^Vim\%((\a\+)\)\=:E\%(117\): .\+: ctrlp#init$/
+  catch /^Vim(call)\=:E117: .\+: ctrlp#init$/
     delcommand CtrlPKoTemplate
     echoerr 'ctrlpvim/ctrlp.vim is not installed.'
   endtry
@@ -34,7 +34,7 @@ function! s:alti_hook() abort
   try
     call alti#init(alti#kotemplate#define())
     command! -bar AltiKoTemplate  call alti#init(alti#kotemplate#define())
-  catch /^Vim\%((\a\+)\)\=:E\%(117\): .\+: alti#init$/
+  catch /^Vim(call)\=:E117: .\+: alti#init$/
     delcommand AltiKoTemplate
     echoerr 'LeafCage/alti.vim is not installed.'
   endtry
@@ -44,7 +44,7 @@ function! s:milqi_hook() abort
   try
     call milqi#candidate_first(milqi#kotemplate#define())
     command! -bar MilqiKoTemplate  call milqi#candidate_first(milqi#kotemplate#define())
-  catch /^Vim\%((\a\+)\)\=:E\%(117\): .\+: milqi#candidate_first$/
+  catch /^Vim(call)\=:E117: .\+: milqi#candidate_first$/
     delcommand MilqiKoTemplate
     echomsg 'kamichidu/vim-milqi is not installed'
   endtry
