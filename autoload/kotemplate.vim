@@ -129,7 +129,7 @@ function! s:auto_action_getchar() abort
     endwhile
     echo msg . '> '
     let ch = getchar()
-    if ch ==# char2nr("\<Esc>")
+    if ch == char2nr("\<Esc>")
       return
     endif
     let nr = ch + from - char2nr('0') - 1
