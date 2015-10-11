@@ -146,7 +146,7 @@ if neobundle#tap('vim-kotemplate')
   unlet s:config
   augroup KoTemplate
     autocmd!
-    autocmd BufNewFile * call kotemplate#auto_action()
+    autocmd BufNewFile * call neobundle#commands#source('vim-kotemplate') | call kotemplate#auto_action()
   augroup END
   call neobundle#untap()
 endif
@@ -199,7 +199,7 @@ endif
 if neobundle#tap('vim-kotemplate')
   augroup KoTemplate
     autocmd!
-    autocmd BufNewFile * call kotemplate#auto_action()
+    autocmd BufNewFile * call neobundle#commands#source('vim-kotemplate') | call kotemplate#auto_action()
   augroup END
   call neobundle#untap()
 endif
