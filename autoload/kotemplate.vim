@@ -98,7 +98,7 @@ function! s:auto_action() abort
 endfunction
 
 function! s:auto_action_excommand() abort
-  call feedkeys(":\<C-u>KoTemplateLoad ")
+  call feedkeys(":\<C-u>KoTemplateLoad ", 'n')
 endfunction
 
 function! s:auto_action_rawinput() abort
