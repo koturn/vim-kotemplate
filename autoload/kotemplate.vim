@@ -32,18 +32,15 @@ function! kotemplate#load(template_path, ...) abort
         \ [g:kotemplate#tag_actions] : g:kotemplate#tag_actions
   for tag_action in tag_actions
     for [tag, Action] in items(tag_action)
-      if type(Action) == type(function('function'))
-        execute 'silent %s/' . tag . '/\=Action(tag)/ge'
-      else
-        execute 'silent %s/' . tag . '/\=s:eval(Action)/ge'
-      endif
+      execute 'silent keepjumps keeppatterns %s/' . tag
+            \ . '/\=' (type(Action) == type(function('function')) ? 'Action(tag)' : 's:eval(Action)') '/ge'
       unlet Action
     endfor
   endfor
   let i = 1
   for va_arg_action in a:000
     let tag = printf('<-ARG%d->', i)
-    execute 'silent %s/' . tag . '/\=s:eval(va_arg_action)/ge'
+    execute 'silent keepjumps keeppatterns %s/' . tag . '/\=s:eval(va_arg_action)/ge'
     let i += 1
   endfor
 endfunction
