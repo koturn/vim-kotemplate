@@ -55,14 +55,14 @@ function! kotemplate#auto_action() abort
   endif
 endfunction
 
-function! kotemplate#make_project(project_name, template_project_name) abort
+function! kotemplate#make_project(has_bang, project_name, template_project_name) abort
   let project = has_key(g:kotemplate#projects, a:template_project_name) ?
         \ g:kotemplate#projects[a:template_project_name] : {}
   if !isdirectory(a:project_name)
     call mkdir(a:project_name)
   endif
   let s:project_name = string(a:project_name)
-  call s:make_project(project, s:add_path_separator(a:project_name))
+  noautocmd call s:make_project(a:has_bang, project, s:add_path_separator(a:project_name))
 endfunction
 
 function! kotemplate#complete_load(arglead, cmdline, cursorpos) abort
@@ -233,22 +233,33 @@ function! s:get_autocmd_function() abort
   return s:autocmd_functions.inputlist
 endfunction
 
-function! s:make_project(project_dict, path) abort
+function! s:make_project(has_bang, project_dict, path) abort
   for [key, val] in items(a:project_dict)
     if type(val) == type('')
       let filepath = a:path . s:eval(substitute(key, '%%PROJECT%%', s:project_name, 'g'))
-      noautocmd edit `=filepath`
+      if filereadable(filepath)
+        if a:has_bang
+          call delete(filepath)
+        else
+          echohl Error
+          echomsg 'File:' filepath 'is already exists'
+          echohl None
+          unlet key val
+          continue
+        endif
+      endif
+      edit `=filepath`
       call kotemplate#load(val)
       let &l:fileencoding = g:kotemplate#fileencoding
       let &l:fileformat = g:kotemplate#fileformat
-      noautocmd write
+      write
       bwipeout
     elseif type(val) == type({})
       let dirpath = s:add_path_separator(a:path . s:eval(substitute(key, '%%PROJECT%%', s:project_name, 'g')))
       if !isdirectory(dirpath)
-        call mkdir(dirpath)
+        call mkdir(dirpath, 'p')
       endif
-      call s:make_project(val, dirpath)
+      call s:make_project(a:has_bang, val, dirpath)
     endif
     unlet key val
   endfor

@@ -14,7 +14,7 @@ set cpo&vim
 
 
 command! -bar -nargs=+ -complete=customlist,kotemplate#complete_load KoTemplateLoad  call kotemplate#load(<f-args>)
-command! -bar -nargs=+ -complete=customlist,kotemplate#complete_project KoTemplateMakeProject  call kotemplate#make_project(<f-args>)
+command! -bar -bang -nargs=+ -complete=customlist,kotemplate#complete_project KoTemplateMakeProject  call kotemplate#make_project(<bang>0, <f-args>)
 
 command! -bar CtrlPKoTemplate  call s:ctrlp_hook() | delfunction s:crtlp_hook
 command! -bar AltiKoTemplate  call s:alti_hook() | delfunction s:alti_hook
