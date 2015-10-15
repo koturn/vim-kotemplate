@@ -27,7 +27,12 @@ function! kotemplate#load(template_path, ...) abort
     echoerr 'File not found:' template_file
     return
   endif
+  let curpos = getcurpos()
+  redir => str
   execute 'silent' (line('.') - 1) 'read' template_file
+  redir END
+  execute 'keepjumps' (curpos[1] + split(str, ' ')[-2][: -3]) 'delete'
+  call setpos('.', curpos)
   let tag_actions = type(g:kotemplate#tag_actions) == type({}) ?
         \ [g:kotemplate#tag_actions] : g:kotemplate#tag_actions
   for tag_action in tag_actions
