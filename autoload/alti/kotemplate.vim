@@ -26,7 +26,8 @@ function! alti#kotemplate#enter() abort dict
 endfunction
 
 function! alti#kotemplate#cmpl(context) abort dict
-  return filter(copy(self.candidates), 'stridx(tolower(v:val), tolower(a:context.arglead)) == 0')
+  let arglead = tolower(a:context.arglead)
+  return filter(copy(self.candidates), '!stridx(tolower(v:val), arglead)')
 endfunction
 
 function! alti#kotemplate#prompt(context) abort
