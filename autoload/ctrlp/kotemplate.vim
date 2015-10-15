@@ -16,6 +16,7 @@ endif
 let g:loaded_ctrlp_kotemplate = 1
 
 
+let s:id = ctrlp#getvar('g:ctrlp_builtins') + len(g:ctrlp_ext_vars)
 let s:kotemplate_var = {
       \ 'init': 'ctrlp#kotemplate#init()',
       \ 'accept': 'ctrlp#kotemplate#accept',
@@ -31,7 +32,6 @@ else
   let g:ctrlp_ext_vars = [s:kotemplate_var]
 endif
 
-let s:id = (exists('g:ctrlp_builtins') ? g:ctrlp_builtins : 0) + len(g:ctrlp_ext_vars)
 function! ctrlp#kotemplate#id() abort
   return s:id
 endfunction
