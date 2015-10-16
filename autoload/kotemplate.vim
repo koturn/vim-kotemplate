@@ -27,17 +27,15 @@ function! kotemplate#load(template_path, ...) abort
     echoerr 'File not found:' template_file
     return
   endif
-  let [curpos, line] = [getcurpos(), getline('.')]
+  let [curpos, line, file_text] = [getcurpos(), getline('.'), readfile(template_file)]
+  if len(file_text) == 0
+    return
+  endif
   let line_parts = [line[: curpos[2] - 1], line[curpos[2] :]]
-  redir => str
-  execute 'silent' (line('.') - 1) 'read' template_file
-  redir END
-  let n_line_template = split(str, ' ')[-2][: -3]
-  let line_end = curpos[1] + n_line_template - 1
+  let line_end = curpos[1] + len(file_text) - 1
+  call setline(line('.'), file_text)
   call setline(curpos[1], line_parts[0] . getline(curpos[1]))
   call setline(line_end, getline(line_end) . line_parts[1])
-  execute 'keepjumps' (line_end + 1) 'delete'
-  call setpos('.', curpos)
   let tag_actions = type(g:kotemplate#tag_actions) == type({}) ?
         \ [g:kotemplate#tag_actions] : g:kotemplate#tag_actions
   for tag_action in tag_actions
