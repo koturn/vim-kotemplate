@@ -57,7 +57,7 @@ function! kotemplate#auto_action() abort
   if g:kotemplate#enable_autocmd
     autocmd! KoTemplate FileType <buffer>
     autocmd KoTemplate FileType <buffer>  call s:auto_action()
-    if !empty(&l:filetype)
+    if &filetype !=# ''
       doautocmd KoTemplate FileType <buffer>
     endif
   endif
@@ -258,8 +258,7 @@ function! s:make_project(has_bang, project_dict, path) abort
       endif
       edit `=filepath`
       call kotemplate#load(val)
-      let &l:fileencoding = g:kotemplate#fileencoding
-      let &l:fileformat = g:kotemplate#fileformat
+      let [&fileencoding, &fileformat] = [g:kotemplate#fileencoding, g:kotemplate#fileformat]
       write
       bwipeout
     elseif type(val) == type({})
