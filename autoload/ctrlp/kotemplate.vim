@@ -8,15 +8,12 @@
 " ============================================================================
 let s:save_cpo = &cpo
 set cpo&vim
-
-
 if exists('g:loaded_ctrlp_kotemplate') && g:loaded_ctrlp_kotemplate
   finish
 endif
 let g:loaded_ctrlp_kotemplate = 1
+let s:ctrlp_builtins = ctrlp#getvar('g:ctrlp_builtins')
 
-
-let s:id = ctrlp#getvar('g:ctrlp_builtins') + len(g:ctrlp_ext_vars)
 let s:kotemplate_var = {
       \ 'init': 'ctrlp#kotemplate#init()',
       \ 'accept': 'ctrlp#kotemplate#accept',
@@ -31,6 +28,8 @@ if exists('g:ctrlp_ext_vars') && !empty(g:ctrlp_ext_vars)
 else
   let g:ctrlp_ext_vars = [s:kotemplate_var]
 endif
+let s:id = s:ctrlp_builtins + len(g:ctrlp_ext_vars)
+unlet s:ctrlp_builtins
 
 function! ctrlp#kotemplate#id() abort
   return s:id
