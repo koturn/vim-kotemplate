@@ -55,10 +55,11 @@ endfunction
 
 function! kotemplate#auto_action() abort
   if g:kotemplate#enable_autocmd
-    autocmd! KoTemplate FileType <buffer>
-    autocmd KoTemplate FileType <buffer>  call s:auto_action()
-    if &filetype !=# ''
-      doautocmd KoTemplate FileType <buffer>
+    if &filetype ==# ''
+      autocmd! KoTemplate FileType <buffer>
+      autocmd KoTemplate FileType <buffer>  call s:auto_action()
+    else
+      call s:auto_action()
     endif
   endif
 endfunction
