@@ -376,7 +376,9 @@ function! s:eval(str) abort
 endfunction
 
 function! s:input(...) abort
+  let filetype = &filetype
   new
+  noautocmd let &filetype = filetype
   cnoremap <buffer> <Esc> __KOTEMPLATE_CANCELED__<CR>
   try
     let input = call('input', a:000)
