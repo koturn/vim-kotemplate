@@ -16,7 +16,7 @@ set cpo&vim
 command! -bar -nargs=+ -complete=customlist,kotemplate#complete_load KoTemplateLoad  call kotemplate#load(<f-args>)
 command! -bar -bang -nargs=+ -complete=customlist,kotemplate#complete_project KoTemplateMakeProject  call kotemplate#make_project(<bang>0, <f-args>)
 
-command! -bar CtrlPKoTemplate  call s:ctrlp_hook() | delfunction s:crtlp_hook
+command! -bar CtrlPKoTemplate  call s:ctrlp_hook() | delfunction s:ctrlp_hook
 command! -bar AltiKoTemplate  call s:alti_hook() | delfunction s:alti_hook
 command! -bar MilqiKoTemplate  call s:milqi_hook() | delfunction s:milqi_hook
 
@@ -24,7 +24,7 @@ function! s:ctrlp_hook() abort
   try
     call ctrlp#init(ctrlp#kotemplate#id())
     command! -bar CtrlPKoTemplate  call ctrlp#init(ctrlp#kotemplate#id())
-  catch /^Vim(call)\=:E117: .\+: ctrlp#init$/
+  catch /^Vim(call)\=:E117: .\+: ctrlp#getvar$/
     delcommand CtrlPKoTemplate
     echoerr 'ctrlpvim/ctrlp.vim is not installed.'
   endtry
