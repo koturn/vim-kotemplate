@@ -113,7 +113,7 @@ function! s:auto_action_rawinput() abort
   let input = s:input('Input template file name> ', '', 'customlist,kotemplate#complete_load')
   redraw!
   if type(input) != type(0)
-    call kotemplate#load(file)
+    call kotemplate#load(input)
   endif
 endfunction
 
