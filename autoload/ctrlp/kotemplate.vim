@@ -21,10 +21,11 @@ let s:kotemplate_var = {
       \ 'lname': 'kotemplate',
       \ 'sname': 'kotemplate',
       \ 'type': 'line',
-      \ 'sort': 0
+      \ 'sort': 0,
+      \ 'nolim': 1
       \}
 if exists('g:ctrlp_ext_vars') && !empty(g:ctrlp_ext_vars)
-  let g:ctrlp_ext_vars = add(g:ctrlp_ext_vars, s:kotemplate_var)
+  call add(g:ctrlp_ext_vars, s:kotemplate_var)
 else
   let g:ctrlp_ext_vars = [s:kotemplate_var]
 endif
