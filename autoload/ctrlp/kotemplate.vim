@@ -18,9 +18,10 @@ let s:kotemplate_var = {
       \ 'init': 'ctrlp#kotemplate#init()',
       \ 'accept': 'ctrlp#kotemplate#accept',
       \ 'enter': 'ctrlp#kotemplate#enter()',
+      \ 'exit': 'ctrlp#kotemplate#exit()',
       \ 'lname': 'kotemplate',
       \ 'sname': 'kotemplate',
-      \ 'type': 'line',
+      \ 'type': 'path',
       \ 'sort': 0,
       \ 'nolim': 1
       \}
@@ -47,6 +48,10 @@ endfunction
 
 function! ctrlp#kotemplate#enter() abort
   let s:candidates = kotemplate#complete_load('', '', 0)
+endfunction
+
+function! ctrlp#kotemplate#exit() abort
+  unlet s:candidates
 endfunction
 
 
