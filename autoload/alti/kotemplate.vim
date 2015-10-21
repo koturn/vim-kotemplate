@@ -11,6 +11,7 @@ set cpo&vim
 
 
 let s:define = {
+      \ 'name': 'kotemplate'
       \ 'enter': 'alti#kotemplate#enter',
       \ 'cmpl': 'alti#kotemplate#cmpl',
       \ 'prompt': 'alti#kotemplate#prompt',
@@ -26,8 +27,7 @@ function! alti#kotemplate#enter() abort dict
 endfunction
 
 function! alti#kotemplate#cmpl(context) abort dict
-  let arglead = tolower(a:context.arglead)
-  return filter(copy(self.candidates), '!stridx(tolower(v:val), arglead)')
+  return a:context.fuzzy_filtered(self.candidates)
 endfunction
 
 function! alti#kotemplate#prompt(context) abort
@@ -35,7 +35,7 @@ function! alti#kotemplate#prompt(context) abort
 endfunction
 
 function! alti#kotemplate#submitted(context, line) abort
-  call kotemplate#load(a:context.inputs[0])
+  call kotemplate#load(a:context.selection)
 endfunction
 
 
