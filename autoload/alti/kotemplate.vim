@@ -10,31 +10,36 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 
+function! s:get_sid() abort
+  return matchstr(expand('<sfile>'), '^function <SNR>\zs\d\+\ze_get_sid$')
+endfunction
+let s:sid_prefix = '<SNR>' . s:get_sid() . '_'
 let s:define = {
-      \ 'name': 'kotemplate'
-      \ 'enter': 'alti#kotemplate#enter',
-      \ 'cmpl': 'alti#kotemplate#cmpl',
-      \ 'prompt': 'alti#kotemplate#prompt',
-      \ 'submitted': 'alti#kotemplate#submitted'
+      \ 'name': 'kotemplate',
+      \ 'enter': s:sid_prefix . 'enter',
+      \ 'cmpl': s:sid_prefix . 'cmpl',
+      \ 'prompt': s:sid_prefix . 'prompt',
+      \ 'submitted': s:sid_prefix . 'submitted'
       \}
 
 function! alti#kotemplate#define() abort
   return s:define
 endfunction
 
-function! alti#kotemplate#enter() abort dict
+
+function! s:enter() abort dict
   let self.candidates = kotemplate#complete_load('', '', 0)
 endfunction
 
-function! alti#kotemplate#cmpl(context) abort dict
+function! s:cmpl(context) abort dict
   return a:context.fuzzy_filtered(self.candidates)
 endfunction
 
-function! alti#kotemplate#prompt(context) abort
+function! s:prompt(context) abort
   return 'KoTemplate> '
 endfunction
 
-function! alti#kotemplate#submitted(context, line) abort
+function! s:submitted(context, line) abort
   call kotemplate#load(a:context.selection)
 endfunction
 
