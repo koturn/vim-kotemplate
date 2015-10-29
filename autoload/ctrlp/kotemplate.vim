@@ -10,11 +10,12 @@ let s:save_cpo = &cpo
 set cpo&vim
 let s:ctrlp_builtins = ctrlp#getvar('g:ctrlp_builtins')
 
+
 function! s:get_sid() abort
   return matchstr(expand('<sfile>'), '^function <SNR>\zs\d\+\ze_get_sid$')
 endfunction
 let s:sid_prefix = '<SNR>' . s:get_sid() . '_'
-let s:kotemplate_var = {
+let g:ctrlp_ext_vars = add(get(g:, 'ctrlp_ext_vars', []), {
       \ 'init': s:sid_prefix . 'init()',
       \ 'accept': s:sid_prefix . 'accept',
       \ 'enter': s:sid_prefix . 'enter()',
@@ -24,12 +25,7 @@ let s:kotemplate_var = {
       \ 'type': 'path',
       \ 'sort': 0,
       \ 'nolim': 1
-      \}
-if exists('g:ctrlp_ext_vars') && !empty(g:ctrlp_ext_vars)
-  call add(g:ctrlp_ext_vars, s:kotemplate_var)
-else
-  let g:ctrlp_ext_vars = [s:kotemplate_var]
-endif
+      \})
 let s:id = s:ctrlp_builtins + len(g:ctrlp_ext_vars)
 delfunction s:get_sid
 unlet s:ctrlp_builtins s:sid_prefix
@@ -54,7 +50,7 @@ function! s:enter() abort
 endfunction
 
 function! s:exit() abort
-  unlet s:candidates
+  unlet! s:candidates
 endfunction
 
 
