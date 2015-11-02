@@ -8,6 +8,10 @@
 " ============================================================================
 let s:save_cpo = &cpo
 set cpo&vim
+if exists('g:loaded_ctrlp_kotemplate') && g:loaded_ctrlp_kotemplate
+  finish
+endif
+let g:loaded_ctrlp_kotemplate = 1
 let s:ctrlp_builtins = ctrlp#getvar('g:ctrlp_builtins')
 
 
