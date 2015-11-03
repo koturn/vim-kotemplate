@@ -383,12 +383,11 @@ function! s:input(...) abort
   cnoremap <buffer> <Esc> __KOTEMPLATE_CANCELED__<CR>
   try
     let input = call('input', a:000)
-    let input = input =~# '__KOTEMPLATE_CANCELED__$' ? 0 : input
+    return input =~# '__KOTEMPLATE_CANCELED__$' ? 0 : input
   catch /^Vim:Interrupt$/
-    let input = -1
+    return -1
   finally
     bwipeout!
-    return input
   endtry
 endfunction
 
