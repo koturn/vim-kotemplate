@@ -19,6 +19,7 @@ command! -bar -bang -nargs=+ -complete=customlist,kotemplate#complete_project Ko
 command! -bar CtrlPKoTemplate  call s:ctrlp_hook() | delfunction s:ctrlp_hook
 command! -bar AltiKoTemplate  call s:alti_hook() | delfunction s:alti_hook
 command! -bar MilqiKoTemplate  call s:milqi_hook() | delfunction s:milqi_hook
+command! -bar FZFKotemplate  call s:fzf_hook() | delfunction s:fzf_hook
 
 function! s:ctrlp_hook() abort
   try
@@ -47,6 +48,16 @@ function! s:milqi_hook() abort
   catch /^Vim(call)\=:E117: .\+: milqi#candidate_first$/
     delcommand MilqiKoTemplate
     echomsg 'kamichidu/vim-milqi is not installed'
+  endtry
+endfunction
+
+function! s:fzf_hook() abort
+  try
+    call fzf#run(fzf#kotemplate#option())
+    command! -bar FZFKotemplate  call fzf#run(fzf#kotemplate#option())
+  catch /^Vim(call)\=:E117: .\+: fzf#run$/
+    delcommand FZFKoTemplate
+    echomsg 'plugin/fzf.vim (in junegunn/fzf) is not found. Please check your runtimepath'
   endtry
 endfunction
 
