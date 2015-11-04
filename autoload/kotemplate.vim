@@ -215,6 +215,10 @@ function! s:auto_action_ctrlp() abort
   call ctrlp#init(ctrlp#kotemplate#id())
 endfunction
 
+function! s:auto_action_fzf() abort
+  call fzf#run(fzf#kotemplate#option())
+endfunction
+
 function! s:auto_action_alti() abort
   call alti#init(alti#kotemplate#define())
 endfunction
@@ -231,6 +235,7 @@ let s:autocmd_functions = {
       \ 'inputlist': function('s:auto_action_inputlist'),
       \ 'unite': function('s:auto_action_unite'),
       \ 'ctrlp': function('s:auto_action_ctrlp'),
+      \ 'fzf': function('s:auto_action_fzf'),
       \ 'alti': function('s:auto_action_alti'),
       \ 'milqi': function('s:auto_action_milqi')
       \}
