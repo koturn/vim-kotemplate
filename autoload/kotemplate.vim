@@ -274,7 +274,7 @@ function! s:make_project(has_bang, project_dict, path) abort
 endfunction
 
 function! s:add_path_separator(path) abort
-  return strridx(a:path, '/') + 1 == len(a:path) ? a:path : (a:path . '/')
+  return a:path[-1 :] ==# '/' ? a:path : (a:path . '/')
 endfunction
 
 let s:template_cache = []
@@ -377,13 +377,13 @@ function! s:eval(str) abort
 endfunction
 
 function! s:input(...) abort
-  let filetype = &filetype
+  let [filetype, dummy] = [&filetype, '__KOTEMPLATE_CANCELED__']
   new
   noautocmd let &filetype = filetype
-  cnoremap <buffer> <Esc> __KOTEMPLATE_CANCELED__<CR>
+  execute 'cnoremap <buffer> <Esc>' dummy . '<CR>'
   try
     let input = call('input', a:000)
-    return input =~# '__KOTEMPLATE_CANCELED__$' ? 0 : input
+    return input[-len(dummy) :] ==# dummy ? 0 : input
   catch /^Vim:Interrupt$/
     return -1
   finally
