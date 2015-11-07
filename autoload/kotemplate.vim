@@ -104,6 +104,7 @@ function! s:auto_action() abort
     return
   endif
   call s:get_autocmd_function()()
+  call s:clear_undo()
 endfunction
 
 function! s:auto_action_excommand() abort
@@ -379,6 +380,14 @@ function! s:eval(str) abort
   catch /^Vim(return)\=:E\%(\d\+\): /
     return a:str
   endtry
+endfunction
+
+function! s:clear_undo() abort
+  let save_undolevels = &l:undolevels
+  setlocal undolevels=-1
+  execute "normal! a \<BS>\<Esc>"
+  setlocal nomodified
+  let &l:undolevels = save_undolevels
 endfunction
 
 function! s:input(...) abort
