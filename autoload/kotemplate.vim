@@ -265,7 +265,10 @@ function! s:make_project(has_bang, project_dict, path) abort
       endif
       edit `=filepath`
       call kotemplate#load(val)
-      let [&fileencoding, &fileformat] = [g:kotemplate#fileencoding, g:kotemplate#fileformat]
+      let [&fileencoding, &fileformat, dir] = [g:kotemplate#fileencoding, g:kotemplate#fileformat, fnamemodify(filepath, ':p:h')]
+      if !isdirectory(dir)
+        call mkdir(iconv(dir, &encoding, &termencoding), 'p')
+      endif
       write
       bwipeout
     elseif type(val) == type({})
