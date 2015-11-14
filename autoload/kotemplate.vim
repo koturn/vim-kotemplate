@@ -120,15 +120,11 @@ function! s:auto_action_rawinput() abort
 endfunction
 
 function! s:auto_action_getchar() abort
-  let template_files = kotemplate#complete_load('', '', 0)
-  let from = 0
-  let to = g:kotemplate#n_choises - 1
-  let fileidx = 1
+  let [template_files, from, to, fileidx] = [kotemplate#complete_load('', '', 0), 0, g:kotemplate#n_choises - 1, 1]
   let n_choises = g:kotemplate#n_choises > 9 ? 9 : g:kotemplate#n_choises
   echo "Select template file to load. (Input nothing if you don't want to load template file)"
   while from < len(template_files)
-    let i = 1
-    let msg = ''
+    let [i, msg] = [1, '']
     while i <= n_choises && fileidx - 1 < len(template_files)
       let msg .= printf("  %d. %s\n", i, template_files[from + i - 1])
       let fileidx += 1
@@ -150,14 +146,10 @@ function! s:auto_action_getchar() abort
 endfunction
 
 function! s:auto_action_input() abort
-  let template_files = kotemplate#complete_load('', '', 0)
-  let from = 0
-  let to = g:kotemplate#n_choises - 1
-  let fileidx = 1
+  let [template_files, from, to, fileidx] = [kotemplate#complete_load('', '', 0), 0, g:kotemplate#n_choises - 1, 1]
   echo "Select template file to load. (Input nothing if you don't want to load template file)"
   while from < len(template_files)
-    let i = 1
-    let msg = ''
+    let [i, msg] = [1, '']
     while i <= g:kotemplate#n_choises && fileidx - 1 < len(template_files)
       let msg .= printf("  %d. %s\n", fileidx, template_files[from + i - 1])
       let fileidx += 1
@@ -181,12 +173,9 @@ function! s:auto_action_input() abort
 endfunction
 
 function! s:auto_action_inputlist() abort
-  let template_files = kotemplate#complete_load('', '', 0)
+  let [template_files, from, to, fileidx] = [kotemplate#complete_load('', '', 0), 0, g:kotemplate#n_choises - 1, 1]
   let msg = "Select template file to load. (Input nothing if you don't want to load template file)"
-  let from = 0
-  let to = g:kotemplate#n_choises - 1
   let choises = insert(template_files[from : to], msg)
-  let fileidx = 1
   while from < len(template_files)
     let i = 1
     while i < len(choises) && fileidx - 1 < len(template_files)
