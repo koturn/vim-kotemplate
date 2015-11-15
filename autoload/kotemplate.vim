@@ -233,8 +233,9 @@ let s:autocmd_functions = {
 function! s:get_autocmd_function() abort
   if has_key(s:autocmd_functions, g:kotemplate#autocmd_function)
     return s:autocmd_functions[g:kotemplate#autocmd_function]
+  else
+    return s:autocmd_functions.inputlist
   endif
-  return s:autocmd_functions.inputlist
 endfunction
 
 function! s:make_project(has_bang, project_dict, path) abort
@@ -320,8 +321,9 @@ function! s:get_filter_function() abort
   elseif type(g:kotemplate#filter.function) == type('')
         \ && has_key(g:kotemplate#filter_functions, g:kotemplate#filter.function)
     return g:kotemplate#filter_functions[g:kotemplate#filter.function]
+  else
+    return g:kotemplate#filter_functions.glob
   endif
-  return g:kotemplate#filter_functions.glob
 endfunction
 
 let g:kotemplate#filter.pattern = get(g:kotemplate#filter, 'pattern', {})
