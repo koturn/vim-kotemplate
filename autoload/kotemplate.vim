@@ -386,11 +386,13 @@ function! s:eval(str) abort
 endfunction
 
 function! s:clear_undo() abort
-  let save_undolevels = &l:undolevels
-  setlocal undolevels=-1
-  execute "normal! a \<BS>\<Esc>"
-  setlocal nomodified
-  let &l:undolevels = save_undolevels
+  if &modifiable
+    let save_undolevels = &l:undolevels
+    setlocal undolevels=-1
+    execute "normal! a \<BS>\<Esc>"
+    setlocal nomodified
+    let &l:undolevels = save_undolevels
+  endif
 endfunction
 
 function! s:input(...) abort
