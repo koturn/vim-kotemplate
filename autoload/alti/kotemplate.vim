@@ -40,7 +40,7 @@ function! s:prompt(context) abort
 endfunction
 
 function! s:submitted(context, line) abort
-  call kotemplate#load(a:context.selection)
+  call kotemplate#load(len(a:context.inputs) == 0 ? a:context.selection : a:context.inputs[0])
 endfunction
 
 
