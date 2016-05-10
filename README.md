@@ -142,12 +142,6 @@ endif
 ###### With [neobundle.vim](https://github.com/Shougo/neobundle.vim).
 
 ```vim
-NeoBundle 'koturn/vim-kotemplate'
-```
-
-If you want to use ```:NeoBundleLazy``` by any means, write following code in your .vimrc.
-
-```vim
 NeoBundle 'koturn/vim-kotemplate', {
       \ 'depends': [
       \   'Shougo/unite.vim',
