@@ -105,7 +105,41 @@ let g:kotemplate#projects = {
 
 ## Installation
 
-###### With [NeoBundle](https://github.com/Shougo/neobundle.vim).
+###### With [dein.vim](https://github.com/Shougo/dein.vim).
+
+```vim
+call dein#add('koturn/vim-kotemplate', {
+      \ 'depends': ['unite.vim', 'ctrlp.vim', 'alti.vim', 'vim-milqi'],
+      \ 'on_cmd': [
+      \   'KoTemplateLoad',
+      \   'KoTemplateMakeProject',
+      \   'CtrlPKoTemplate',
+      \   'AltiKoTemplate',
+      \   'MilqiKoTemplate',
+      \   'FZFKoTemplate',
+      \ ],
+      \ 'on_source': 'unite.vim',
+      \ 'on_func': 'kotemplate'
+      \})
+
+" Dependent plugins (optional)
+call dein#add('Shougo/unite.vim')
+call dein#add('koturn/vim-kotemplate')
+call dein#add('LeafCage/alti.vim')
+call dein#add('kamichidu/vim-milqi')
+
+" ...
+
+if dein#tap('vim-kotemplate')  " {{{
+  augroup KoTemplate
+    autocmd!
+    autocmd BufNewFile * call neobundle#commands#source('vim-kotemplate') | call kotemplate#auto_action()
+  augroup END
+endif
+" }}}
+```
+
+###### With [neobundle.vim](https://github.com/Shougo/neobundle.vim).
 
 ```vim
 NeoBundle 'koturn/vim-kotemplate'
@@ -114,95 +148,35 @@ NeoBundle 'koturn/vim-kotemplate'
 If you want to use ```:NeoBundleLazy``` by any means, write following code in your .vimrc.
 
 ```vim
-NeoBundleLazy 'koturn/vim-kotemplate'
-if neobundle#tap('vim-kotemplate')
-  let s:config = {
-        \ 'depends': [
-        \   'Shougo/unite.vim', 'ctrlpvim/ctrlp.vim',
-        \   'LeafCage/alti.vim', 'kamichidu/vim-milqi'
-        \ ],
-        \ 'autoload': {
-        \   'commands' : [{
-        \     'name': 'KoTemplateLoad',
-        \     'complete': 'customlist,kotemplate#complete_load',
-        \   }, {
-        \     'name': 'KoTemplateMakeProject',
-        \     'complete': 'customlist,kotemplate#complete_project',
-        \   }],
-        \   'unite_sources': 'kotemplate',
-        \   'function_prefix': 'kotemplate'
-        \ }
-        \}
-  if neobundle#is_installed('ctrlp.vim')
-    call add(s:config.autoload.commands, 'CtrlPKoTemplate')
-  endif
-  if neobundle#is_installed('alti.vim')
-    call add(s:config.autoload.commands, 'AltiKoTemplate')
-  endif
-  if neobundle#is_installed('vim-milqi')
-    call add(s:config.autoload.commands, 'MilqiKoTemplate')
-  endif
-  call neobundle#config(s:config)
-  unlet s:config
-  augroup KoTemplate
-    autocmd!
-    autocmd BufNewFile * call neobundle#commands#source('vim-kotemplate') | call kotemplate#auto_action()
-  augroup END
-  call neobundle#untap()
-endif
-```
+NeoBundle 'koturn/vim-kotemplate', {
+      \ 'depends': [
+      \   'Shougo/unite.vim',
+      \   'ctrlpvim/ctrlp.vim',
+      \   'LeafCage/alti.vim',
+      \   'kamichidu/vim-milqi'
+      \ ],
+      \ 'on_cmd' : [
+      \   'KoTemplateLoad',
+      \   'KoTemplateMakeProject',
+      \   'CtrlPKoTemplate',
+      \   'AltiKoTemplate',
+      \   'MilqiKoTemplate',
+      \   'FZFKoTemplate',
+      \ ],
+      \ 'on_source': 'unite.vim',
+      \ 'on_func': 'kotemplate'
+      \}
 
-But if you use ```neobundle#load_cache()```, write following code instead.
-
-```vim
-if neobundle#load_cache()
-  " ...
-
-  NeoBundleLazy 'koturn/vim-kotemplate'
-  if neobundle#tap('vim-kotemplate')
-    let s:config = {
-          \ 'depends': [
-          \   'Shougo/unite.vim', 'ctrlpvim/ctrlp.vim',
-          \   'LeafCage/alti.vim', 'kamichidu/vim-milqi'
-          \ ],
-          \ 'autoload': {
-          \   'commands' : [{
-          \     'name': 'KoTemplateLoad',
-          \     'complete': 'customlist,kotemplate#complete_load',
-          \   }, {
-          \     'name': 'KoTemplateMakeProject',
-          \     'complete': 'customlist,kotemplate#complete_project',
-          \   }],
-          \   'unite_sources': 'kotemplate',
-          \   'function_prefix': 'kotemplate'
-          \ }
-          \}
-    if neobundle#is_installed('ctrlp.vim')
-      call add(s:config.autoload.commands, 'CtrlPKoTemplate')
-    endif
-    if neobundle#is_installed('alti.vim')
-      call add(s:config.autoload.commands, 'AltiKoTemplate')
-    endif
-    if neobundle#is_installed('vim-milqi')
-      call add(s:config.autoload.commands, 'MilqiKoTemplate')
-    endif
-    call neobundle#config(s:config)
-    unlet s:config
-    call neobundle#untap()
-  endif
-  " ...
-
-  NeoBundleSaveCache
-endif
 " ...
 
-if neobundle#tap('vim-kotemplate')
+if neobundle#tap('vim-kotemplate')  " {{{
   augroup KoTemplate
     autocmd!
     autocmd BufNewFile * call neobundle#commands#source('vim-kotemplate') | call kotemplate#auto_action()
   augroup END
   call neobundle#untap()
 endif
+" }}}
 ```
 
 ###### With [Vundle](https://github.com/VundleVim/Vundle.vim).
@@ -220,7 +194,7 @@ Plug 'koturn/vim-kotemplate'
 ###### Manual install
 
 If you don't want to use plugin manager, put files and directories on
-```~/.vim/```, or ```%HOME%/vimfiles``` on Windows.
+```~/.vim/```, or ```%HOME%/vimfiles/``` on Windows.
 
 
 ## Dependent plugins
