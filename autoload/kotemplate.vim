@@ -208,7 +208,11 @@ function! s:auto_action_unite() abort
 endfunction
 
 function! s:auto_action_ctrlp() abort
+  if has('vim_starting')
+    autocmd KoTemplate VimEnter * wincmd w | autocmd! KoTemplate VimEnter *
+  endif
   call ctrlp#init(ctrlp#kotemplate#id())
+  doautocmd KoTemplate User TemplateLoaded
 endfunction
 
 function! s:auto_action_fzf() abort
