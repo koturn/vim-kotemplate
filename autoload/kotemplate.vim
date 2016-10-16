@@ -207,6 +207,11 @@ function! s:auto_action_unite() abort
   doautocmd KoTemplate User TemplateLoaded
 endfunction
 
+function! s:auto_action_denite() abort
+  Denite kotemplate
+  doautocmd KoTemplate User TemplateLoaded
+endfunction
+
 function! s:auto_action_ctrlp() abort
   if has('vim_starting')
     autocmd KoTemplate VimEnter * wincmd w | autocmd! KoTemplate VimEnter *
@@ -237,6 +242,7 @@ let s:autocmd_functions = {
       \ 'input': function('s:auto_action_input'),
       \ 'inputlist': function('s:auto_action_inputlist'),
       \ 'unite': function('s:auto_action_unite'),
+      \ 'denite': function('s:auto_action_denite'),
       \ 'ctrlp': function('s:auto_action_ctrlp'),
       \ 'fzf': function('s:auto_action_fzf'),
       \ 'alti': function('s:auto_action_alti'),
