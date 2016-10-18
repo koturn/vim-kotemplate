@@ -10,18 +10,22 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 
-let s:source = {
+let s:kind = {
       \ 'name': 'kotemplate',
-      \ 'description': 'Template loader',
-      \ 'default_kind': 'kotemplate'
+      \ 'action_table': {},
+      \ 'default_action': 'load_template'
       \}
 
-function! s:source.gather_candidates(args, context) abort
-  return map(kotemplate#complete_load('', '', 0), '{"word": v:val}')
+let s:kind.action_table.load_template = {
+      \ 'description': 'Load template file'
+      \}
+function! s:kind.action_table.load_template.func(candidate) abort
+  call kotemplate#load(a:candidate.word)
 endfunction
 
-function! unite#sources#kotemplate#define() abort
-  return s:source
+
+function! unite#kinds#kotemplate#define() abort
+  return s:kind
 endfunction
 
 
