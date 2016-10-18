@@ -16,6 +16,7 @@ class Source(Base):
         super().__init__(vim)
         self.name = 'kotemplate'
         self.kind = 'kotemplate'
+        self.candidates = self.vim.call('kotemplate#complete_load', '', '', 0)
 
     def gather_candidates(self, context):
-        return list(map(lambda filepath: {'word': filepath}, self.vim.call('kotemplate#complete_load', '', '', 0)))
+        return list(map(lambda filepath: {'word': filepath}, self.candidates))
