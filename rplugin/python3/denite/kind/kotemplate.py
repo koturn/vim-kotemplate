@@ -15,7 +15,8 @@ class Kind(Base):
     def __init__(self, vim):
         super().__init__(vim)
         self.name = 'kotemplate'
+        self.default_action = 'kotemplate'
 
-    def action_default(self, context):
+    def action_kotemplate(self, context):
         for target in context['targets']:
             self.vim.call('kotemplate#load', target['word'])
