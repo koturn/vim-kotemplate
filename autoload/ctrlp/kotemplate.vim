@@ -47,7 +47,7 @@ endfunction
 function! s:accept(mode, str) abort
   call ctrlp#exit()
   call kotemplate#load(a:str)
-  doautocmd KoTemplate User TemplateLoaded
+  silent doautocmd KoTemplate User TemplateLoaded
 endfunction
 
 function! s:enter() abort

@@ -109,7 +109,7 @@ endfunction
 
 function! s:auto_action_excommand() abort
   call feedkeys(":\<C-u>KoTemplateLoad ", 'n')
-  doautocmd KoTemplate User TemplateLoaded
+  silent doautocmd KoTemplate User TemplateLoaded
 endfunction
 
 function! s:auto_action_rawinput() abort
@@ -117,7 +117,7 @@ function! s:auto_action_rawinput() abort
   redraw!
   if type(input) != type(0)
     call kotemplate#load(input)
-    doautocmd KoTemplate User TemplateLoaded
+    silent doautocmd KoTemplate User TemplateLoaded
   endif
 endfunction
 
@@ -140,7 +140,7 @@ function! s:auto_action_getchar() abort
     let nr = ch + from - char2nr('0') - 1
     if from <= nr && nr <= to && nr < len(template_files)
       call kotemplate#load(template_files[nr])
-      doautocmd KoTemplate User TemplateLoaded
+      silent doautocmd KoTemplate User TemplateLoaded
       return
     endif
     let from += n_choises
@@ -163,7 +163,7 @@ function! s:auto_action_input() abort
       let nr = str2nr(input) - 1
       if 0 <= nr && nr <= to && nr < len(template_files)
         call kotemplate#load(template_files[nr])
-        doautocmd KoTemplate User TemplateLoaded
+        silent doautocmd KoTemplate User TemplateLoaded
         return
       endif
     elseif type(input) == type(0)
@@ -193,7 +193,7 @@ function! s:auto_action_inputlist() abort
     let nr = inputlist(choises) - 1
     if 0 <= nr && nr <= to && nr < len(template_files)
       call kotemplate#load(template_files[nr])
-      doautocmd KoTemplate User TemplateLoaded
+      silent doautocmd KoTemplate User TemplateLoaded
       return
     endif
     let from += g:kotemplate#n_choises
@@ -204,12 +204,12 @@ endfunction
 
 function! s:auto_action_unite() abort
   Unite kotemplate
-  doautocmd KoTemplate User TemplateLoaded
+  silent doautocmd KoTemplate User TemplateLoaded
 endfunction
 
 function! s:auto_action_denite() abort
   Denite kotemplate
-  doautocmd KoTemplate User TemplateLoaded
+  silent doautocmd KoTemplate User TemplateLoaded
 endfunction
 
 function! s:auto_action_ctrlp() abort
@@ -217,22 +217,22 @@ function! s:auto_action_ctrlp() abort
     autocmd KoTemplate VimEnter * wincmd w | autocmd! KoTemplate VimEnter *
   endif
   call ctrlp#init(ctrlp#kotemplate#id())
-  doautocmd KoTemplate User TemplateLoaded
+  silent doautocmd KoTemplate User TemplateLoaded
 endfunction
 
 function! s:auto_action_fzf() abort
   call fzf#run(fzf#kotemplate#option())
-  doautocmd KoTemplate User TemplateLoaded
+  silent doautocmd KoTemplate User TemplateLoaded
 endfunction
 
 function! s:auto_action_alti() abort
   call alti#init(alti#kotemplate#define())
-  doautocmd KoTemplate User TemplateLoaded
+  silent doautocmd KoTemplate User TemplateLoaded
 endfunction
 
 function! s:auto_action_milqi() abort
   call milqi#candidate_first(milqi#kotemplate#define())
-  doautocmd KoTemplate User TemplateLoaded
+  silent doautocmd KoTemplate User TemplateLoaded
 endfunction
 
 let s:autocmd_functions = {
