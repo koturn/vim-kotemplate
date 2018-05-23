@@ -298,8 +298,10 @@ endfunction
 let s:template_cache = []
 function! s:gather_template_files() abort
   if !g:kotemplate#enable_template_cache || empty(s:template_cache)
-    let s:template_cache = filter(split(globpath(
-          \ g:kotemplate#dir . '**', '*', 1), "\n"), 'filereadable(v:val)')
+    let s:template_cache = filter(extend(
+          \ split(globpath(g:kotemplate#dir . '**', '*', 1), "\n"),
+          \ split(globpath(g:kotemplate#dir . '**', '.*', 1), "\n")),
+          \ 'filereadable(v:val)')
   endif
   return copy(s:template_cache)
 endfunction
