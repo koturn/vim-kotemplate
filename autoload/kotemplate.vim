@@ -20,6 +20,12 @@ let g:kotemplate#projects = get(g:, 'kotemplate#projects', {})
 let g:kotemplate#fileencoding = get(g:, 'kotemplate#fileencoding', 'utf-8')
 let g:kotemplate#fileformat = get(g:, 'kotemplate#fileformat', 'unix')
 
+let s:t_number = type(0)
+let s:t_string = type('')
+let s:t_func = type(function('function'))
+let s:t_list = type([])
+let s:t_dict = type({})
+
 
 function! kotemplate#load(template_path, ...) abort
   let template_file = expand(s:add_path_separator(g:kotemplate#dir) . a:template_path)
@@ -36,12 +42,12 @@ function! kotemplate#load(template_path, ...) abort
   call setline(line('.'), file_text)
   call setline(curpos[1], line_parts[0] . getline(curpos[1]))
   call setline(line_end, getline(line_end) . line_parts[1])
-  let tag_actions = type(g:kotemplate#tag_actions) == type({}) ?
+  let tag_actions = type(g:kotemplate#tag_actions) == s:t_dict ?
         \ [g:kotemplate#tag_actions] : g:kotemplate#tag_actions
   for tag_action in tag_actions
     for [tag, Action] in items(tag_action)
       execute 'silent keepjumps keeppatterns %s/' . tag
-            \ . '/\=' (type(Action) == type(function('function')) ? 'Action(tag)' : 's:eval(Action)') '/ge'
+            \ . '/\=' (type(Action) == s:t_func ? 'Action(tag)' : 's:eval(Action)') '/ge'
       unlet Action
     endfor
   endfor
@@ -115,7 +121,7 @@ endfunction
 function! s:auto_action_rawinput() abort
   let input = s:input('Input template file name> ', '', 'customlist,kotemplate#complete_load')
   redraw!
-  if type(input) != type(0)
+  if type(input) != s:t_number
     call kotemplate#load(input)
     silent doautocmd KoTemplate User TemplateLoaded
   endif
@@ -166,7 +172,7 @@ function! s:auto_action_input() abort
         silent doautocmd KoTemplate User TemplateLoaded
         return
       endif
-    elseif type(input) == type(0)
+    elseif type(input) == s:t_number
       return
     else
       echo "\n"
@@ -259,7 +265,7 @@ endfunction
 
 function! s:make_project(has_bang, project_dict, path) abort
   for [key, val] in items(a:project_dict)
-    if type(val) == type('')
+    if type(val) == s:t_string
       let filepath = a:path . s:eval(substitute(key, '%%PROJECT%%', s:project_name, 'g'))
       if filereadable(filepath)
         if a:has_bang
@@ -280,7 +286,7 @@ function! s:make_project(has_bang, project_dict, path) abort
       endif
       write
       bwipeout
-    elseif type(val) == type({})
+    elseif type(val) == s:t_dict
       let dirpath = s:add_path_separator(a:path . s:eval(substitute(key, '%%PROJECT%%', s:project_name, 'g')))
       if !isdirectory(dirpath)
         call mkdir(dirpath, 'p')
@@ -337,9 +343,9 @@ function! s:regex_filter(candidates) abort
 endfunction
 
 function! s:get_filter_function() abort
-  if type(g:kotemplate#filter.function) == type(function('function'))
+  if type(g:kotemplate#filter.function) == s:t_func
     return g:kotemplate#filter.function
-  elseif type(g:kotemplate#filter.function) == type('')
+  elseif type(g:kotemplate#filter.function) == s:t_string
         \ && has_key(g:kotemplate#filter_functions, g:kotemplate#filter.function)
     return g:kotemplate#filter_functions[g:kotemplate#filter.function]
   else
@@ -363,7 +369,7 @@ function! s:flatten(list, ...) abort
   endif
   let limit -= 1
   for Value in a:list
-    let memo += type(Value) == type([]) ? s:flatten(Value, limit) : [Value]
+    let memo += type(Value) == s:t_list ? s:flatten(Value, limit) : [Value]
     unlet! Value
   endfor
   return memo
