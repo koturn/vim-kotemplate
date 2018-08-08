@@ -16,13 +16,13 @@ let s:source = {
       \ 'default_kind': 'kotemplate'
       \}
 
-function! s:source.gather_candidates(args, context) abort
+function! s:source.gather_candidates(args, context) abort " {{{
   return map(kotemplate#complete_load('', '', 0), '{"word": v:val}')
-endfunction
+endfunction " }}}
 
-function! unite#sources#kotemplate#define() abort
+function! unite#sources#kotemplate#define() abort " {{{
   return s:source
-endfunction
+endfunction " }}}
 
 
 let &cpo = s:save_cpo

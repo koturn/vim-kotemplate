@@ -13,6 +13,7 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 
+" {{{ Commands
 command! -bar -nargs=+ -complete=customlist,kotemplate#complete_load KoTemplateLoad  call kotemplate#load(<f-args>)
 command! -bar -bang -nargs=+ -complete=customlist,kotemplate#complete_project KoTemplateMakeProject  call kotemplate#make_project(<bang>0, <f-args>)
 
@@ -20,8 +21,9 @@ command! -bar CtrlPKoTemplate  call s:ctrlp_hook() | delfunction s:ctrlp_hook
 command! -bar AltiKoTemplate  call s:alti_hook() | delfunction s:alti_hook
 command! -bar MilqiKoTemplate  call s:milqi_hook() | delfunction s:milqi_hook
 command! -bar FZFKotemplate  call s:fzf_hook() | delfunction s:fzf_hook
+" }}}
 
-function! s:ctrlp_hook() abort
+function! s:ctrlp_hook() abort " {{{
   try
     call ctrlp#init(ctrlp#kotemplate#id())
     command! -bar CtrlPKoTemplate  call ctrlp#init(ctrlp#kotemplate#id())
@@ -29,9 +31,9 @@ function! s:ctrlp_hook() abort
     delcommand CtrlPKoTemplate
     echoerr 'ctrlpvim/ctrlp.vim is not installed.'
   endtry
-endfunction
+endfunction " }}}
 
-function! s:alti_hook() abort
+function! s:alti_hook() abort " {{{
   try
     call alti#init(alti#kotemplate#define())
     command! -bar AltiKoTemplate  call alti#init(alti#kotemplate#define())
@@ -39,9 +41,9 @@ function! s:alti_hook() abort
     delcommand AltiKoTemplate
     echoerr 'LeafCage/alti.vim is not installed.'
   endtry
-endfunction
+endfunction " }}}
 
-function! s:milqi_hook() abort
+function! s:milqi_hook() abort " {{{
   try
     call milqi#candidate_first(milqi#kotemplate#define())
     command! -bar MilqiKoTemplate  call milqi#candidate_first(milqi#kotemplate#define())
@@ -49,9 +51,9 @@ function! s:milqi_hook() abort
     delcommand MilqiKoTemplate
     echomsg 'kamichidu/vim-milqi is not installed'
   endtry
-endfunction
+endfunction " }}}
 
-function! s:fzf_hook() abort
+function! s:fzf_hook() abort " {{{
   try
     call fzf#run(fzf#kotemplate#option())
     command! -bar FZFKotemplate  call fzf#run(fzf#kotemplate#option())
@@ -59,13 +61,13 @@ function! s:fzf_hook() abort
     delcommand FZFKoTemplate
     echomsg 'plugin/fzf.vim (in junegunn/fzf) is not found. Please check your runtimepath'
   endtry
-endfunction
+endfunction " }}}
 
 
-augroup KoTemplate
+augroup KoTemplate " {{{
   autocmd!
   autocmd BufNewFile * call kotemplate#auto_action()
-augroup END
+augroup END " }}}
 
 
 let &cpo = s:save_cpo

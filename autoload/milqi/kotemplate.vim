@@ -11,18 +11,18 @@ set cpo&vim
 
 let s:define = {'name': 'kotemplate'}
 
-function! milqi#kotemplate#define() abort
+function! milqi#kotemplate#define() abort " {{{
   return s:define
-endfunction
+endfunction " }}}
 
-function! s:define.init(context) abort
+function! s:define.init(context) abort " {{{
   return kotemplate#complete_load('', '', 0)
-endfunction
+endfunction " }}}
 
-function! s:define.accept(context, candidate) abort
+function! s:define.accept(context, candidate) abort " {{{
   call milqi#exit()
   call kotemplate#load(a:candidate)
-endfunction
+endfunction " }}}
 
 
 let &cpo = s:save_cpo

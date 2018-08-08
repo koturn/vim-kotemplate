@@ -13,15 +13,15 @@ set cpo&vim
 let s:option = {
       \ 'down': '25%'
       \}
-function! s:option.sink(candidate) abort
+function! s:option.sink(candidate) abort " {{{
   call kotemplate#load(a:candidate)
-endfunction
+endfunction " }}}
 
 
-function! fzf#kotemplate#option() abort
+function! fzf#kotemplate#option() abort " {{{
   let s:option.source = kotemplate#complete_load('', '', 0)
   return s:option
-endfunction
+endfunction " }}}
 
 
 let &cpo = s:save_cpo

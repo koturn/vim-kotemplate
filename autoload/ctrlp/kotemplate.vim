@@ -15,10 +15,14 @@ set cpo&vim
 
 let s:ctrlp_builtins = ctrlp#getvar('g:ctrlp_builtins')
 
-function! s:get_sid_prefix() abort
+" {{{ Get SID
+function! s:get_sid_prefix() abort " {{{
   return matchstr(expand('<sfile>'), '^function \zs<SNR>\d\+_\zeget_sid_prefix$')
-endfunction
+endfunction " }}}
 let s:sid_prefix = s:get_sid_prefix()
+delfunction s:get_sid_prefix
+" }}}
+
 let g:ctrlp_ext_vars = add(get(g:, 'ctrlp_ext_vars', []), {
       \ 'init': s:sid_prefix . 'init()',
       \ 'accept': s:sid_prefix . 'accept',
@@ -31,32 +35,31 @@ let g:ctrlp_ext_vars = add(get(g:, 'ctrlp_ext_vars', []), {
       \ 'nolim': 1
       \})
 let s:id = s:ctrlp_builtins + len(g:ctrlp_ext_vars)
-delfunction s:get_sid_prefix
 unlet s:ctrlp_builtins s:sid_prefix
 
 
-function! ctrlp#kotemplate#id() abort
+function! ctrlp#kotemplate#id() abort " {{{
   return s:id
-endfunction
+endfunction " }}}
 
 
-function! s:init() abort
+function! s:init() abort " {{{
   return s:candidates
-endfunction
+endfunction " }}}
 
-function! s:accept(mode, str) abort
+function! s:accept(mode, str) abort " {{{
   call ctrlp#exit()
   call kotemplate#load(a:str)
   silent doautocmd KoTemplate User TemplateLoaded
-endfunction
+endfunction " }}}
 
-function! s:enter() abort
+function! s:enter() abort " {{{
   let s:candidates = kotemplate#complete_load('', '', 0)
-endfunction
+endfunction " }}}
 
-function! s:exit() abort
+function! s:exit() abort " {{{
   unlet! s:candidates
-endfunction
+endfunction " }}}
 
 
 let &cpo = s:save_cpo

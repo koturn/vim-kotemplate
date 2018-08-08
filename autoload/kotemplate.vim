@@ -8,6 +8,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+" {{{ Global variables
 let g:kotemplate#dir = get(g:, 'kotemplate#dir', '~/.vim/template/')
 let g:kotemplate#tag_actions = get(g:, 'kotemplate#tag_actions', [])
 let g:kotemplate#filter = get(g:, 'kotemplate#filter', {})
@@ -19,15 +20,21 @@ let g:kotemplate#auto_filetypes = get(g:, 'kotemplate#auto_filetypes', [])
 let g:kotemplate#projects = get(g:, 'kotemplate#projects', {})
 let g:kotemplate#fileencoding = get(g:, 'kotemplate#fileencoding', 'utf-8')
 let g:kotemplate#fileformat = get(g:, 'kotemplate#fileformat', 'unix')
+" }}}
 
+" {{{ Constants
 let s:t_number = type(0)
 let s:t_string = type('')
 let s:t_func = type(function('function'))
 let s:t_list = type([])
 let s:t_dict = type({})
+" }}}
 
+" {{{ Script local variables
+let s:template_cache = []
+" }}}
 
-function! kotemplate#load(template_path, ...) abort
+function! kotemplate#load(template_path, ...) abort " {{{
   let template_file = expand(s:add_path_separator(g:kotemplate#dir) . a:template_path)
   if !filereadable(template_file)
     echoerr 'File not found:' template_file
@@ -57,9 +64,9 @@ function! kotemplate#load(template_path, ...) abort
     execute 'silent keepjumps keeppatterns %s/' . tag . '/\=s:eval(va_arg_action)/ge'
     let i += 1
   endfor
-endfunction
+endfunction " }}}
 
-function! kotemplate#auto_action() abort
+function! kotemplate#auto_action() abort " {{{
   if g:kotemplate#enable_autocmd
     if &filetype ==# ''
       autocmd! KoTemplate FileType <buffer>
@@ -68,9 +75,9 @@ function! kotemplate#auto_action() abort
       call s:auto_action()
     endif
   endif
-endfunction
+endfunction " }}}
 
-function! kotemplate#make_project(has_bang, project_name, template_project_name) abort
+function! kotemplate#make_project(has_bang, project_name, template_project_name) abort " {{{
   let project = has_key(g:kotemplate#projects, a:template_project_name) ?
         \ g:kotemplate#projects[a:template_project_name] : {}
   if !isdirectory(a:project_name)
@@ -78,9 +85,9 @@ function! kotemplate#make_project(has_bang, project_name, template_project_name)
   endif
   let s:project_name = string(a:project_name)
   noautocmd call s:make_project(a:has_bang, project, s:add_path_separator(a:project_name))
-endfunction
+endfunction " }}}
 
-function! kotemplate#complete_load(arglead, cmdline, cursorpos) abort
+function! kotemplate#complete_load(arglead, cmdline, cursorpos) abort " {{{
   let shellslash = &shellslash
   set shellslash
   let nargs = a:cmdline ==# '' ? 1 : len(split(split(a:cmdline, '[^\\]\zs|')[-1], '\s\+'))
@@ -93,41 +100,41 @@ function! kotemplate#complete_load(arglead, cmdline, cursorpos) abort
     return filter(candidates, '!stridx(tolower(v:val), _arglead)')
   endif
   let &shellslash = shellslash
-endfunction
+endfunction " }}}
 
-function! kotemplate#complete_project(arglead, cmdline, cursorpos) abort
+function! kotemplate#complete_project(arglead, cmdline, cursorpos) abort " {{{
   let nargs = len(split(split(a:cmdline, '[^\\]\zs|')[-1], '\s\+'))
   if nargs == 2 || (nargs == 3 && a:arglead !=# '')
     let _arglead = tolower(a:arglead)
     return filter(keys(g:kotemplate#projects), '!stridx(tolower(v:val), _arglead)')
   endif
-endfunction
+endfunction " }}}
 
 
-function! s:auto_action() abort
+function! s:auto_action() abort " {{{
   autocmd! KoTemplate FileType <buffer>
   if !count(g:kotemplate#auto_filetypes, &filetype) || filereadable(expand('%:p'))
     return
   endif
   autocmd KoTemplate User TemplateLoaded call s:clear_undo() | autocmd! KoTemplate User TemplateLoaded
   call s:get_autocmd_function()()
-endfunction
+endfunction " }}}
 
-function! s:auto_action_excommand() abort
+function! s:auto_action_excommand() abort " {{{
   call feedkeys(":\<C-u>KoTemplateLoad ", 'n')
   silent doautocmd KoTemplate User TemplateLoaded
-endfunction
+endfunction " }}}
 
-function! s:auto_action_rawinput() abort
+function! s:auto_action_rawinput() abort " {{{
   let input = s:input('Input template file name> ', '', 'customlist,kotemplate#complete_load')
   redraw!
   if type(input) != s:t_number
     call kotemplate#load(input)
     silent doautocmd KoTemplate User TemplateLoaded
   endif
-endfunction
+endfunction " }}}
 
-function! s:auto_action_getchar() abort
+function! s:auto_action_getchar() abort " {{{
   let [template_files, from, to, fileidx] = [kotemplate#complete_load('', '', 0), 0, g:kotemplate#n_choises - 1, 1]
   let n_choises = g:kotemplate#n_choises > 9 ? 9 : g:kotemplate#n_choises
   echo "Select template file to load. (Input nothing if you don't want to load template file)"
@@ -152,9 +159,9 @@ function! s:auto_action_getchar() abort
     let from += n_choises
     let to += n_choises
   endwhile
-endfunction
+endfunction " }}}
 
-function! s:auto_action_input() abort
+function! s:auto_action_input() abort " {{{
   let [template_files, from, to, fileidx] = [kotemplate#complete_load('', '', 0), 0, g:kotemplate#n_choises - 1, 1]
   echo "Select template file to load. (Input nothing if you don't want to load template file)"
   while from < len(template_files)
@@ -180,9 +187,9 @@ function! s:auto_action_input() abort
     let from += g:kotemplate#n_choises
     let to += g:kotemplate#n_choises
   endwhile
-endfunction
+endfunction " }}}
 
-function! s:auto_action_inputlist() abort
+function! s:auto_action_inputlist() abort " {{{
   let [template_files, from, to, fileidx] = [kotemplate#complete_load('', '', 0), 0, g:kotemplate#n_choises - 1, 1]
   let msg = "Select template file to load. (Input nothing if you don't want to load template file)"
   let choises = insert(template_files[from : to], msg)
@@ -206,42 +213,42 @@ function! s:auto_action_inputlist() abort
     let to += g:kotemplate#n_choises
     let choises[0] = ''
   endwhile
-endfunction
+endfunction " }}}
 
-function! s:auto_action_unite() abort
+function! s:auto_action_unite() abort " {{{
   Unite kotemplate
   silent doautocmd KoTemplate User TemplateLoaded
-endfunction
+endfunction " }}}
 
-function! s:auto_action_denite() abort
+function! s:auto_action_denite() abort " {{{
   Denite kotemplate
   silent doautocmd KoTemplate User TemplateLoaded
-endfunction
+endfunction " }}}
 
-function! s:auto_action_ctrlp() abort
+function! s:auto_action_ctrlp() abort " {{{
   if has('vim_starting')
     autocmd KoTemplate VimEnter * wincmd w | autocmd! KoTemplate VimEnter *
   endif
   call ctrlp#init(ctrlp#kotemplate#id())
   silent doautocmd KoTemplate User TemplateLoaded
-endfunction
+endfunction " }}}
 
-function! s:auto_action_fzf() abort
+function! s:auto_action_fzf() abort " {{{
   call fzf#run(fzf#kotemplate#option())
   silent doautocmd KoTemplate User TemplateLoaded
-endfunction
+endfunction " }}}
 
-function! s:auto_action_alti() abort
+function! s:auto_action_alti() abort " {{{
   call alti#init(alti#kotemplate#define())
   silent doautocmd KoTemplate User TemplateLoaded
-endfunction
+endfunction " }}}
 
-function! s:auto_action_milqi() abort
+function! s:auto_action_milqi() abort " {{{
   call milqi#candidate_first(milqi#kotemplate#define())
   silent doautocmd KoTemplate User TemplateLoaded
-endfunction
+endfunction " }}}
 
-let s:autocmd_functions = {
+let s:autocmd_functions = { " {{{
       \ 'excommand': function('s:auto_action_excommand'),
       \ 'getchar': function('s:auto_action_getchar'),
       \ 'rawinput': function('s:auto_action_rawinput'),
@@ -253,17 +260,17 @@ let s:autocmd_functions = {
       \ 'fzf': function('s:auto_action_fzf'),
       \ 'alti': function('s:auto_action_alti'),
       \ 'milqi': function('s:auto_action_milqi')
-      \}
+      \} " }}}
 
-function! s:get_autocmd_function() abort
+function! s:get_autocmd_function() abort " {{{
   if has_key(s:autocmd_functions, g:kotemplate#autocmd_function)
     return s:autocmd_functions[g:kotemplate#autocmd_function]
   else
     return s:autocmd_functions.inputlist
   endif
-endfunction
+endfunction " }}}
 
-function! s:make_project(has_bang, project_dict, path) abort
+function! s:make_project(has_bang, project_dict, path) abort " {{{
   for [key, val] in items(a:project_dict)
     if type(val) == s:t_string
       let filepath = a:path . s:eval(substitute(key, '%%PROJECT%%', s:project_name, 'g'))
@@ -295,14 +302,13 @@ function! s:make_project(has_bang, project_dict, path) abort
     endif
     unlet key val
   endfor
-endfunction
+endfunction " }}}
 
-function! s:add_path_separator(path) abort
+function! s:add_path_separator(path) abort " {{{
   return a:path[-1 :] ==# '/' ? a:path : (a:path . '/')
-endfunction
+endfunction " }}}
 
-let s:template_cache = []
-function! s:gather_template_files() abort
+function! s:gather_template_files() abort " {{{
   if !g:kotemplate#enable_template_cache || empty(s:template_cache)
     let s:template_cache = filter(extend(
           \ split(globpath(g:kotemplate#dir . '**', '*', 1), "\n"),
@@ -310,18 +316,18 @@ function! s:gather_template_files() abort
           \ 'filereadable(v:val)')
   endif
   return copy(s:template_cache)
-endfunction
+endfunction " }}}
 
-function! s:suffix_filter(candidates) abort
+function! s:suffix_filter(candidates) abort " {{{
   if has_key(g:kotemplate#filter.pattern, &filetype)
     return s:uniq(s:flatten(map(copy(g:kotemplate#filter.pattern[&filetype]),
           \ 'filter(copy(a:candidates), "v:val =~# " . string("\\." . v:val . "$"))'), 1))
   else
     return a:candidates
   endif
-endfunction
+endfunction " }}}
 
-function! s:glob_filter(candidates) abort
+function! s:glob_filter(candidates) abort " {{{
   if has_key(g:kotemplate#filter.pattern, &filetype)
     let dir = s:add_path_separator(g:kotemplate#dir)
     let files = map(s:flatten(map(copy(g:kotemplate#filter.pattern[&filetype]),
@@ -331,18 +337,18 @@ function! s:glob_filter(candidates) abort
   else
     return a:candidates
   endif
-endfunction
+endfunction " }}}
 
-function! s:regex_filter(candidates) abort
+function! s:regex_filter(candidates) abort " {{{
   if has_key(g:kotemplate#filter.pattern, &filetype)
     return s:uniq(s:flatten(map(copy(g:kotemplate#filter.pattern[&filetype]),
           \ 'filter(copy(a:candidates), "v:val =~# " . string(v:val))'), 1))
   else
     return a:candidates
   endif
-endfunction
+endfunction " }}}
 
-function! s:get_filter_function() abort
+function! s:get_filter_function() abort " {{{
   if type(g:kotemplate#filter.function) == s:t_func
     return g:kotemplate#filter.function
   elseif type(g:kotemplate#filter.function) == s:t_string
@@ -351,7 +357,7 @@ function! s:get_filter_function() abort
   else
     return g:kotemplate#filter_functions.glob
   endif
-endfunction
+endfunction " }}}
 
 let g:kotemplate#filter.pattern = get(g:kotemplate#filter, 'pattern', {})
 let g:kotemplate#filter.function = get(g:kotemplate#filter, 'function', {})
@@ -361,7 +367,7 @@ let g:kotemplate#filter_functions = {
       \ 'regex': function('s:regex_filter')
       \}
 
-function! s:flatten(list, ...) abort
+function! s:flatten(list, ...) abort " {{{
   let limit = a:0 > 0 ? a:1 : -1
   let memo = []
   if limit == 0
@@ -373,13 +379,13 @@ function! s:flatten(list, ...) abort
     unlet! Value
   endfor
   return memo
-endfunction
+endfunction " }}}
 
-function! s:uniq(list) abort
+function! s:uniq(list) abort " {{{
   return s:uniq_by(a:list, 'v:val')
-endfunction
+endfunction " }}}
 
-function! s:uniq_by(list, f) abort
+function! s:uniq_by(list, f) abort " {{{
   let list = map(copy(a:list), printf('[v:val, %s]', a:f))
   let i = 0
   let seen = {}
@@ -393,17 +399,17 @@ function! s:uniq_by(list, f) abort
     endif
   endwhile
   return map(list, 'v:val[0]')
-endfunction
+endfunction " }}}
 
-function! s:eval(str) abort
+function! s:eval(str) abort " {{{
   try
     return eval(a:str)
   catch /^Vim(return)\=:E\%(\d\+\): /
     return a:str
   endtry
-endfunction
+endfunction " }}}
 
-function! s:clear_undo() abort
+function! s:clear_undo() abort " {{{
   if &modifiable
     let save_undolevels = &l:undolevels
     setlocal undolevels=-1
@@ -411,9 +417,9 @@ function! s:clear_undo() abort
     setlocal nomodified
     let &l:undolevels = save_undolevels
   endif
-endfunction
+endfunction " }}}
 
-function! s:input(...) abort
+function! s:input(...) abort " {{{
   let [filetype, dummy] = [&filetype, '__KOTEMPLATE_CANCELED__']
   new
   noautocmd let &filetype = filetype
@@ -426,7 +432,7 @@ function! s:input(...) abort
   finally
     bwipeout!
   endtry
-endfunction
+endfunction " }}}
 
 
 let &cpo = s:save_cpo

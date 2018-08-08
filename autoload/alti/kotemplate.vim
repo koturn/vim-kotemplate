@@ -10,10 +10,14 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 
-function! s:get_sid() abort
-  return matchstr(expand('<sfile>'), '^function <SNR>\zs\d\+\ze_get_sid$')
-endfunction
-let s:sid_prefix = '<SNR>' . s:get_sid() . '_'
+" {{{ Get SID
+function! s:get_sid_prefix() abort " {{{
+  return matchstr(expand('<sfile>'), '^function \zs<SNR>\d\+_\zeget_sid_prefix$')
+endfunction " }}}
+let s:sid_prefix = s:get_sid_prefix()
+delfunction s:get_sid_prefix
+" }}}
+
 let s:define = {
       \ 'name': 'kotemplate',
       \ 'enter': s:sid_prefix . 'enter',
@@ -22,26 +26,26 @@ let s:define = {
       \ 'submitted': s:sid_prefix . 'submitted'
       \}
 
-function! alti#kotemplate#define() abort
+function! alti#kotemplate#define() abort " {{{
   return s:define
-endfunction
+endfunction " }}}
 
 
-function! s:enter() abort dict
+function! s:enter() abort dict " {{{
   let self.candidates = kotemplate#complete_load('', '', 0)
-endfunction
+endfunction " }}}
 
-function! s:cmpl(context) abort dict
+function! s:cmpl(context) abort dict " {{{
   return a:context.fuzzy_filtered(self.candidates)
-endfunction
+endfunction " }}}
 
-function! s:prompt(context) abort
+function! s:prompt(context) abort " {{{
   return 'KoTemplate> '
-endfunction
+endfunction " }}}
 
-function! s:submitted(context, line) abort
+function! s:submitted(context, line) abort " {{{
   call kotemplate#load(len(a:context.inputs) == 0 ? a:context.selection : a:context.inputs[0])
-endfunction
+endfunction " }}}
 
 
 let &cpo = s:save_cpo

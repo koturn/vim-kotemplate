@@ -19,14 +19,14 @@ let s:kind = {
 let s:kind.action_table.load_template = {
       \ 'description': 'Load template file'
       \}
-function! s:kind.action_table.load_template.func(candidate) abort
+function! s:kind.action_table.load_template.func(candidate) abort " {{{
   call kotemplate#load(a:candidate.word)
-endfunction
+endfunction " }}}
 
 
-function! unite#kinds#kotemplate#define() abort
+function! unite#kinds#kotemplate#define() abort " {{{
   return s:kind
-endfunction
+endfunction " }}}
 
 
 let &cpo = s:save_cpo
