@@ -248,7 +248,7 @@ function! s:auto_action_milqi() abort " {{{
   silent doautocmd KoTemplate User TemplateLoaded
 endfunction " }}}
 
-let s:autocmd_functions = { " {{{
+let s:autocmd_functions = {
       \ 'excommand': function('s:auto_action_excommand'),
       \ 'getchar': function('s:auto_action_getchar'),
       \ 'rawinput': function('s:auto_action_rawinput'),
@@ -260,7 +260,7 @@ let s:autocmd_functions = { " {{{
       \ 'fzf': function('s:auto_action_fzf'),
       \ 'alti': function('s:auto_action_alti'),
       \ 'milqi': function('s:auto_action_milqi')
-      \} " }}}
+      \}
 
 function! s:get_autocmd_function() abort " {{{
   if has_key(s:autocmd_functions, g:kotemplate#autocmd_function)

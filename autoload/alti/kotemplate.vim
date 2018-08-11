@@ -25,6 +25,7 @@ let s:define = {
       \ 'prompt': s:sid_prefix . 'prompt',
       \ 'submitted': s:sid_prefix . 'submitted'
       \}
+unlet s:sid_prefix
 
 function! alti#kotemplate#define() abort " {{{
   return s:define
