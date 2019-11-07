@@ -21,7 +21,7 @@ command! -bar CtrlPKoTemplate  call s:ctrlp_hook() | delfunction s:ctrlp_hook
 command! -bar AltiKoTemplate  call s:alti_hook() | delfunction s:alti_hook
 command! -bar MilqiKoTemplate  call s:milqi_hook() | delfunction s:milqi_hook
 command! -bar FZFKoTemplate  call s:fzf_hook() | delfunction s:fzf_hook
-command! -bar QuickpickKoTemplate  call s:quickpick_hook() | delfunction s:quickpick_hook
+command! -bar Pkotemplate  call s:quickpick_hook() | delfunction s:quickpick_hook
 " }}}
 
 function! s:ctrlp_hook() abort " {{{
@@ -65,8 +65,8 @@ endfunction " }}}
 
 function! s:quickpick_hook() abort " {{{
   try
-    call quickpick#show(quickpick#kotemplate#id())
-    command! -bar QuickpickKoTemplate  call quickpick#show(quickpick#kotemplate#id())
+    call quickpick#pickers#kotemplate#show()
+    command! -bar Pkotemplate  call quickpick#pickers#kotemplate#show()
   catch /^Vim(call)\=:E117: .\+: quickpick#show$/
     delcommand QuickpickKoTemplate
     echomsg 'prabirshrestha/quickpick.vim is not installed'
