@@ -367,19 +367,25 @@ let g:kotemplate#filter_functions = {
       \ 'regex': function('s:regex_filter')
       \}
 
-function! s:flatten(list, ...) abort " {{{
-  let limit = a:0 > 0 ? a:1 : -1
-  let memo = []
-  if limit == 0
-    return a:list
-  endif
-  let limit -= 1
-  for Value in a:list
-    let memo += type(Value) == s:t_list ? s:flatten(Value, limit) : [Value]
-    unlet! Value
-  endfor
-  return memo
-endfunction " }}}
+if exists('*flatten')
+  " flatten() has been implemented in Vim 8.2.0935.
+  let s:flatten = function('flatten')
+else
+  function! s:_flatten(list, ...) abort " {{{
+    let limit = a:0 > 0 ? a:1 : -1
+    if limit == 0
+      return a:list
+    endif
+    let limit -= 1
+    let memo = []
+    for Value in a:list
+      let memo += type(Value) == s:t_list ? s:_flatten(Value, limit) : [Value]
+      unlet! Value
+    endfor
+    return memo
+  endfunction " }}}
+  let s:flatten = function('s:_flatten')
+endif
 
 function! s:uniq(list) abort " {{{
   return s:uniq_by(a:list, 'v:val')
