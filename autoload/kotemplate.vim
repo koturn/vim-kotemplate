@@ -387,25 +387,31 @@ else
   let s:flatten = function('s:_flatten')
 endif
 
-function! s:uniq(list) abort " {{{
-  return s:uniq_by(a:list, 'v:val')
-endfunction " }}}
+if exists('*uniq')
+  " uniq() has been implemented in Vim 7.4.0218.
+  let s:uniq = function('uniq')
+else
+  function! s:_uniq(list) abort " {{{
+    return s:_uniq_by(a:list, 'v:val')
+  endfunction " }}}
 
-function! s:uniq_by(list, f) abort " {{{
-  let list = map(copy(a:list), printf('[v:val, %s]', a:f))
-  let i = 0
-  let seen = {}
-  while i < len(list)
-    let key = string(list[i][1])
-    if has_key(seen, key)
-      call remove(list, i)
-    else
-      let seen[key] = 1
-      let i += 1
-    endif
-  endwhile
-  return map(list, 'v:val[0]')
-endfunction " }}}
+  function! s:_uniq_by(list, f) abort " {{{
+    let list = map(copy(a:list), printf('[v:val, %s]', a:f))
+    let i = 0
+    let seen = {}
+    while i < len(list)
+      let key = string(list[i][1])
+      if has_key(seen, key)
+        call remove(list, i)
+      else
+        let seen[key] = 1
+        let i += 1
+      endif
+    endwhile
+    return map(list, 'v:val[0]')
+  endfunction " }}}
+  let s:uniq = function('s:_uniq')
+endif
 
 function! s:eval(str) abort " {{{
   try
